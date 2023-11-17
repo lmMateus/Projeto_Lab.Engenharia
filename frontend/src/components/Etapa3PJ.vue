@@ -1,0 +1,345 @@
+<template>
+  <div class="container-fluid mt-5">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="container-fluid p-2 align-items-center">
+          <div class="d-flex justify-content-around">
+            <button class="btn bg-ligth border-black border border-2  btn-sm rounded-circle"
+              style="width: 2rem; height: 2rem; color: white; background-color: #393E46" data-bs-toggle="collapse"
+              data-bs-target="#company1" aria-expanded="true" aria-controls="company1" @click="steps(1)">
+              ✓
+            </button>
+            <span class="bg-my w-25 rounded mt-auto mb-auto me-1 ms-1" style="height: 0.2rem"></span>
+            <button class="btn bg-ligth border-black border border-2  btn-sm rounded-circle"
+              style="width: 2rem; height: 2rem; color: white; background-color: #393E46" data-bs-toggle="collapse"
+              data-bs-target="#company2" aria-expanded="true" aria-controls="company2" @click="steps(2)">
+              ✓
+            </button>
+            <span class="bg-my w-25 rounded mt-auto mb-auto me-1 ms-1" style="height: 0.2rem"></span>
+            <button class="btn bg-ligth border-black border border-2  btn-sm rounded-circle"
+              style="width: 2rem; height: 2rem; color: white; background-color: #393E46" data-bs-toggle="collapse"
+              data-bs-target="#company3" aria-expanded="false" aria-controls="company3" @click="steps(3)">
+              ✓
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <h2>Etapa 3: PJ</h2>
+    <p>Perfil Escolhido: {{ perfil }}</p>
+    <p>Persona Escolhida: {{ persona }}</p>
+    <button @click="concluirCadastro">Concluir Cadastro</button>
+  </div>
+  <section class="p-3" style="background-color: #4e6786;">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+
+        <div :class="classeNormal">
+          <div class="card" style="border-radius: 1rem;">
+            <div class="row  g-0">
+              <form class="ps-3 pe-2 pt-4 pb-5" action="">
+                <h3><b>Dados Cadastrais</b></h3>
+
+                <div class="form-row row mb-3">
+                  <div class="form-group col-md-4">
+                    <label for=""><b>CNPJ</b></label>
+                    <input type="text" class="form-control" id="cnpj" v-mask="'##.###.###/####-##'" @blur="consultarCNPJ"
+                      v-model="pj.cnpj">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for=""><b>Fundação</b></label>
+                    <input type="text" class="form-control" id="fundacao" v-mask="'####/##/##'" v-model="pj.fundacao">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for=""><b>Tipo</b></label>
+                    <input type="text" class="form-control" id="tipo" v-model="pj.tipo">
+                  </div>
+                </div>
+                <div class="form-row row mb-3">
+                  <div class="form-group col-md-12">
+                    <label for=""><b>Razão Social</b></label>
+                    <input type="text" class="form-control" id="razao_social" v-model="pj.razao_social">
+                  </div>
+                </div>
+                <div class="form-row row mb-3">
+                  <div class="form-group col-md-6">
+                    <label for=""><b>Nome Fantasia</b></label>
+                    <input type="text" class="form-control" id="nome_fantasia" v-model="pj.nome_fantasia">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for=""><b>Capital Social</b></label>
+                    <input type="text" class="form-control" id="capital_social" v-model="pj.capital_social">
+                  </div>
+                </div>
+                <div class="form-row row mb-3">
+                  <div class="form-group col-md-12">
+                    <label for=""><b>Ramo de atividade</b></label>
+                    <input type="text" class="form-control" id="atividade" v-model="pj.atividade">
+                  </div>
+                </div>
+                <div class="form-row row">
+                  <div class="form-group col-md-4">
+                    <label for=""><b>Porte</b></label>
+                    <input type="text" class="form-control" id="porte" v-model="pj.porte">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for=""><b>Natureza jurídica</b></label>
+                    <input type="text" class="form-control" id="natureza_juridica" v-model="pj.natureza_juridica">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for=""><b>Telefone</b></label>
+                    <input type="text" class="form-control" id="telefone" v-model="pj.telefone">
+                  </div>
+                </div>
+                <div class="form-row row">
+                  <div class="form-group col-md-8">
+                    <label for=""><b>E-mail</b></label>
+                    <input type="text" class="form-control" id="email" v-model="pj.email">
+                  </div>
+                </div>
+
+                <div class="form-row row">
+                  <div class="form-group col-md-4">
+                    <label for=""><b>Senha</b></label>
+                    <input type="text" class="form-control" id="">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for=""><b>Repitir Senha</b></label>
+                    <input type="text" class="form-control" id="">
+                  </div>
+                  <div class="form-check col-md-4">
+                    <input type="checkbox" class="form-check-input" id="checkBox" v-model="checkbox">
+                    <label for="" class="form-check-label"><b>Dados Desatualizados?</b></label>
+                  </div>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+        <div :class="classeNormal">
+          <div class="card" style="border-radius: 1rem;">
+            <div class="row  g-0">
+              <form class="ps-3 pe-2 pt-4 pb-5" action="">
+                <h3><b> Endereço</b></h3>
+                <div class="form-row row mb-3">
+                  <div class="form-group col-md-6">
+                    <label for=""><b>CEP</b></label>
+                    <input type="text" class="form-control" id="cep" v-mask="'#####-###'" v-model="endereco.cep"
+                      @blur="consultarCEP" @focus="limpaCampos">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for=""><b>Cidade</b></label>
+                    <input type="text" class="form-control" id="cidade" v-model="endereco.cidade">
+                  </div>
+                </div>
+
+                <div class="form-row row mb-3">
+                  <div class="form-group col-md-6">
+                    <label for=""><b>Rua</b></label>
+                    <input type="text" class="form-control" id="rua" v-model="endereco.rua">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for=""><b>Estado</b></label>
+                    <select class="form-control" id="estado" v-model="endereco.estado">
+                      <option v-for="estado in estados" :key="estado.sigla" :value="estado.nome">{{ estado.nome }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-row row mb-3">
+                  <div class="form-group col-md-2">
+                    <label for=""><b>Número</b></label>
+                    <input type="text" class="form-control" id="numero" v-model="endereco.numero">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for=""><b>Bairro</b></label>
+                    <input type="text" class="form-control" id="bairro" v-model="endereco.bairro">
+                  </div>
+                </div>
+                <div class="form-row row">
+                  <div class="form-group  gap-2 col-4 mx-auto mt-4">
+                    <button class="btn btn-secondary">Cadastrar</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </section>
+</template>
+
+<script>
+import { mask } from 'vue-the-mask'
+export default {
+  directives: { mask },
+  props: {
+    perfil: String,
+    persona: String,
+  },
+  data() {
+    return {
+      personaSelecionada: null,
+      step: null,
+      classeNormal: '',
+      checkbox: false,
+      cep: '',
+      endereco: {
+        cep: '',
+        cidade: '',
+        rua: '',
+        estado: '',
+        bairro: '',
+        numero: '',
+      },
+      cepa: null,
+      estados: [
+        { nome: 'Acre', sigla: 'AC' },
+        { nome: 'Alagoas', sigla: 'AL' },
+        { nome: 'Amapá', sigla: 'AP' },
+        { nome: 'Amazonas', sigla: 'AM' },
+        { nome: 'Bahia', sigla: 'BA' },
+        { nome: 'Ceará', sigla: 'CE' },
+        { nome: 'Distrito Federal', sigla: 'DF' },
+        { nome: 'Espírito Santo', sigla: 'ES' },
+        { nome: 'Goiás', sigla: 'GO' },
+        { nome: 'Maranhão', sigla: 'MA' },
+        { nome: 'Mato Grosso', sigla: 'MT' },
+        { nome: 'Mato Grosso do Sul', sigla: 'MS' },
+        { nome: 'Minas Gerais', sigla: 'MG' },
+        { nome: 'Pará', sigla: 'PA' },
+        { nome: 'Paraíba', sigla: 'PB' },
+        { nome: 'Paraná', sigla: 'PR' },
+        { nome: 'Pernambuco', sigla: 'PE' },
+        { nome: 'Piauí', sigla: 'PI' },
+        { nome: 'Rio de Janeiro', sigla: 'RJ' },
+        { nome: 'Rio Grande do Norte', sigla: 'RN' },
+        { nome: 'Rio Grande do Sul', sigla: 'RS' },
+        { nome: 'Rondônia', sigla: 'RO' },
+        { nome: 'Roraima', sigla: 'RR' },
+        { nome: 'Santa Catarina', sigla: 'SC' },
+        { nome: 'São Paulo', sigla: 'SP' },
+        { nome: 'Sergipe', sigla: 'SE' },
+        { nome: 'Tocantins', sigla: 'TO' },
+      ],
+      cnpj: '',
+      pj: {
+        cnpj: '',
+        fundacao: '',
+        tipo: '',
+        razao_social: '',
+        nome_fantasia: '',
+        capital_social: '',
+        atividade: '',
+        porte: '',
+        natureza_juridica: '',
+        telefone: '',
+        email: '',
+      },
+    };
+  },
+  mounted() {
+    window.addEventListener('resize', this.atualizarClasse);
+
+    this.atualizarClasse();
+  },
+  methods: {
+    atualizarClasse() {
+      // Obtenha a largura da tela
+      const larguraDaTela = window.innerWidth;
+
+      // Determine a classe com base na largura da tela
+      this.classeNormal = larguraDaTela < 950 ? 'col col-12 pt-3' : 'col col-md-6 pt-3';
+    },
+    consultarCNPJ() {
+      const cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
+      const url = `https://publica.cnpj.ws/cnpj/${cnpj}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const estadoEncontrado = this.estados.find(estado => estado.sigla == data.estabelecimento.estado.sigla)
+          console.log(estadoEncontrado)
+          this.pj = {
+            cnpj: this.pj.cnpj,
+            fundacao: data.estabelecimento.data_inicio_atividade,
+            tipo: data.estabelecimento.tipo,
+            razao_social: data.razao_social,
+            nome_fantasia: data.estabelecimento.nome_fantasia,
+            capital_social: data.capital_social,
+            atividade: data.estabelecimento.atividade_principal.descricao,
+            porte: data.porte.descricao,
+            natureza_juridica: data.natureza_juridica.descricao,
+            email: data.estabelecimento.email,
+          }
+          this.endereco = {
+            cep: data.estabelecimento.cep,
+            cidade: data.estabelecimento.cidade.nome,
+            rua: data.estabelecimento.logradouro,
+            estado: estadoEncontrado.nome,
+            bairro:data.estabelecimento.bairro,
+            numero: data.estabelecimento.numero
+          }
+        })
+        .catch(error => {
+          console.log('Ocorreu um erro: ', error);
+        });
+
+    },
+    removerMascaraCNPJ(cnpj) {
+      return cnpj.replace(/[^\d]/g, '');
+    },
+    consultarCEP() {
+      const cep = this.removerMascaraCEP(this.endereco.cep);
+      const url = `https://viacep.com.br/ws/${cep}/json/`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+
+          const estadoEncontrado = this.estados.find(estado => estado.sigla == data.uf)
+          console.log(estadoEncontrado)
+          this.endereco = {
+            cep: data.cep,
+            cidade: data.localidade,
+            rua: data.logradouro,
+            bairro: data.bairro,
+            estado: estadoEncontrado.nome
+          }
+        })
+        .catch(error => {
+          console.log('Ocorreu um erro: ', error);
+        });
+    },
+    limpaCampos() {
+      this.endereco = {
+        cidade: '',
+        rua: '',
+        bairro: '',
+        estado: '',
+        numero: '',
+      }
+    },
+    removerMascaraCEP(cepa) {
+      return cepa.replace(/\D/g, '')
+    }
+  },
+  beforeUnmount() {
+    // Remova o ouvinte de redimensionamento quando o componente for destruído
+    window.removeEventListener('resize', this.atualizarClasse);
+  }
+};
+</script>
+
+<style>
+.bg-my {
+  background-color: rgb(145, 145, 145);
+}
+</style>

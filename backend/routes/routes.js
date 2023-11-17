@@ -11,7 +11,7 @@ import {
 
 //iniciando rota express
 const router = express.Router();
-router.post('/cadastro', createPerfil);
+router.post('/create', createPerfil);
 router.get('/login/:email', showPerfilByEmail);
 router.get('/perfil/:id', showPerfilById);
 router.put('/perfil/:id', updatePerfil);
