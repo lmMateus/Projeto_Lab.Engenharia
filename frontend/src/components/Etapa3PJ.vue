@@ -93,7 +93,8 @@
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Telefone</b></label>
-                    <input type="text" class="form-control" id="telefone" v-model="pj.telefone">
+                    <input type="text" class="form-control" id="telefone" 
+                    v-model="pj.telefone" v-mask="['(##) ####-####', '(##) #####-####']">
                   </div>
                 </div>
                 <div class="form-row row">
@@ -292,9 +293,10 @@ export default {
 
 
       this.getPJ = await this.getPJByCNPJ()
-      if (this.getPJ.cnpj == this.pj.cnpj) {
+      this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
+      if (this.getPJ.cnpj == this.cnpj) {
         this.docExiste = true;
-        this.pj.cnpj = "";
+        this.limpaCamposG();
         return;
       }
 
@@ -316,10 +318,12 @@ export default {
       }
 
       this.getPerfil = await this.getPerfilByEmail()
+      this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
+      console.log(this.pj.telefone)
       try {
         const response = await axios.post('http://127.0.0.1:5174/createPJ', {
           cod_perfil: this.getPerfil.cod_perfil,
-          cnpj: this.pj.cnpj,
+          cnpj: this.cnpj,
           ramo_atividade: this.pj.atividade,
           capital_social: this.pj.capital_social,
           tipo_empresa: this.pj.tipo,
@@ -334,7 +338,8 @@ export default {
           numero: this.endereco.numero,
           bairro: this.endereco.bairro,
           cidade: this.endereco.cidade,
-          estado: this.endereco.estado
+          estado: this.endereco.estado,
+          dado_desatualizado: this.checkbox
         })
       } catch (err) {
         console.log(err);
@@ -352,8 +357,10 @@ export default {
     },
 
     async getPJByCNPJ() {
+      this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
+      console.log(this.cnpj)
       try {
-        const response = await axios.get(`http://127.0.0.1:5174/pessoajuridica/${this.pj.cnpj}`);
+        const response = await axios.get(`http://127.0.0.1:5174/pessoajuridica/${this.cnpj}`);
         return response.data;
       } catch (err) {
         console.log(err);
@@ -402,7 +409,7 @@ export default {
         .then(data => {
           const estadoEncontrado = this.estados.find(estado => estado.sigla == data.estabelecimento.estado.sigla)
           console.log(estadoEncontrado)
-          this.pj = {
+          this.pj = {           
             cnpj: this.pj.cnpj,
             fundacao: data.estabelecimento.data_inicio_atividade,
             tipo: data.estabelecimento.tipo,
@@ -454,6 +461,35 @@ export default {
         });
     },
     limpaCampos() {
+      this.endereco = {
+        cidade: '',
+        rua: '',
+        bairro: '',
+        estado: '',
+        numero: '',
+      }
+    },
+    limpaCamposG() {
+      this.pj ={
+        cnpj: '',
+        fundacao: '',
+        tipo: '',
+        razao_social: '',
+        nome_fantasia: '',
+        capital_social: '',
+        atividade: '',
+        porte: '',
+        natureza_juridica: '',
+        telefone: '',
+      }
+
+      this.login = {
+        email: '',
+        senha: '',
+        repetirSenha: '',
+      }
+
+      
       this.endereco = {
         cidade: '',
         rua: '',
