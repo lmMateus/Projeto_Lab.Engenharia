@@ -1,12 +1,23 @@
 import {
-  getPFByCodPerfil,
+  // getPFByCodPerfil,
   insertPF,
-  updatePFById,
-  deletePFById,
-} from "../models/pessoaFisicaModel"; 
+  // updatePFById,
+  // deletePFById,
+  getPessoaFisicaCPF,
+} from "../models/pessoaFisicaModel.js"; 
 
-export const showPFById = (req, res) => {
-  getPFByCodPerfil(req.params.id,(err,results)=>{
+// export const showPFById = (req, res) => {
+//   getPFByCodPerfil(req.params.id,(err,results)=>{
+//     if(err){
+//       res.send(err);
+//     }else{
+//       res.json(results);
+//     }
+//   });
+// };
+
+export const showPFByCPF = (req, res) => {
+  getPessoaFisicaCPF(req.params.cpf,(err,results)=>{
     if(err){
       res.send(err);
     }else{
@@ -26,25 +37,25 @@ export const createPF = (req, res) => {
   });
 }
 
-export const updatePF = (req, res) => {
-  const data = req.body;
-  const id = req.params.id;
-  updatePFById(data, id, (err, results) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(results);
-    }
-  });
-};
+// export const updatePF = (req, res) => {
+//   const data = req.body;
+//   const id = req.params.id;
+//   updatePFById(data, id, (err, results) => {
+//     if (err) {
+//       res.send(err);
+//     } else {
+//       res.json(results);
+//     }
+//   });
+// };
 
 
-export const deletePF = (req, res) => {
-  deletePFById(req.params.id, (err, results) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(results);
-    }
-  });
-};
+// export const deletePF = (req, res) => {
+//   deletePFById(req.params.id, (err, results) => {
+//     if (err) {
+//       res.send(err);
+//     } else {
+//       res.json(results);
+//     }
+//   });
+// };

@@ -3,18 +3,26 @@ import express from "express";
 //import controllers 
 import {
   showPerfilByEmail,
-  showPerfilById,
   createPerfil,
-  updatePerfil,
-  deletePerfil,
 } from "../controllers/perfil.js";
 
+import{
+  showPFByCPF,
+  createPF,
+} from "../controllers/pessoaFisica.js";
+
+import{
+  showPJByCNPJ,
+  createPJ,
+} from "../controllers/pessoaJuridica.js";
 //iniciando rota express
 const router = express.Router();
-router.post('/create', createPerfil);
-router.get('/login/:email', showPerfilByEmail);
-router.get('/perfil/:id', showPerfilById);
-router.put('/perfil/:id', updatePerfil);
-router.delete('/perfil/:id', deletePerfil);
+router.post('/createPerfil', createPerfil);
+router.get('/perfil/:email', showPerfilByEmail);
+router.get('/pessoafisica/:cpf', showPFByCPF);
+router.post('/createPF', createPF);
+router.get('/pessoajuridica/:cnpj', showPJByCNPJ);
+router.post('/createPJ', createPJ);
+
 
 export default router;

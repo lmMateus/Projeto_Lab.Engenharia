@@ -26,12 +26,6 @@
       </div>
     </div>
   </div>
-  <div>
-    <h2>Etapa 3: PF</h2>
-    <p>Perfil Escolhido: {{ perfil }}</p>
-    <p>Persona Escolhida: {{ persona }}</p>
-    <button @click="concluirCadastro">Concluir Cadastro</button>
-  </div>
   <section class="p-3" style="background-color: #4e6786;">
     <div class="container h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -42,33 +36,39 @@
               <form class="ps-3 pe-2 pt-4 pb-5" action="">
                 <div v-if="campoVazioAlerta" class="alert alert-danger mt-3" role="alert">
                   Preencha todos os campos!
-                </div>                
+                </div>
+                <div v-if="emailExiste" class="alert alert-danger mt-3" role="alert">
+                  Esse e-mail já foi cadastrado!
+                </div>
+                <div v-if="docExiste" class="alert alert-danger mt-3" role="alert">
+                  Esse CPF já foi cadastrado!
+                </div>
                 <h3><b>Dados Cadastrais</b></h3>
 
                 <div class="form-row row mb-3">
                   <div class="form-group col-md-8">
                     <label for=""><b>Nome completo</b></label>
-                    <input type="text" class="form-control" id="nome" v-model="dc.nome">
+                    <input type="text" class="form-control" id="nome" v-model="pf.nome">
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Nascimento</b></label>
-                    <input type="text" class="form-control" id="nascimento" v-mask="'##/##/####'" v-model="dc.nascimento">
+                    <input type="text" class="form-control" id="nascimento" v-mask="'##/##/####'" v-model="pf.nascimento">
                   </div>
                 </div>
 
                 <div class="form-row row mb-3">
                   <div class="form-group col-md-4">
                     <label for=""><b>CPF</b></label>
-                    <input type="text" class="form-control" id="cpf" v-mask="'###.###.###-##'" v-model="dc.cpf">
+                    <input type="text" class="form-control" id="cpf" v-mask="'###.###.###-##'" v-model="pf.cpf">
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>RG</b></label>
-                    <input type="text" class="form-control" id="rg" v-mask="'##.###.###-X'" v-model="dc.rg">
+                    <input type="text" class="form-control" id="rg" v-mask="'##.###.###-X'" v-model="pf.rg">
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Telefone</b></label>
                     <input type="text" class="form-control" id="telefone" v-mask="['(##) ####-####', '(##) #####-####']"
-                      v-model="dc.telefone">
+                      v-model="pf.telefone">
                   </div>
                 </div>
 
@@ -81,8 +81,8 @@
 
                 <div class="form-row row">
                   <div v-if="senhaInvalida" class="alert alert-danger mt-3" role="alert">
-                  Senha inválida!
-                </div>
+                    Senha inválida!
+                  </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Senha</b></label>
                     <input type="password" class="form-control" id="senha" v-model="login.senha">
@@ -147,14 +147,13 @@
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   </section>
 </template>
 
 <script>
+import axios from "axios";
 import { mask } from 'vue-the-mask'
 export default {
   directives: { mask },
@@ -164,12 +163,16 @@ export default {
   },
   data() {
     return {
-      personaSelecionada: null,
       step: null,
-      classeNormal: '',
-      campoVazioAlerta: false,
-      senhaInvalida: false,
-      dc: {
+      classeNormal: '',        //Ajusta a classe dos elementos 
+      campoVazioAlerta: false, //Ativa uma div quando os campos estiverem vazios
+      senhaInvalida: false,    //ativa uma div quando as senha estiverem invalidas
+      emailExiste: false,      //ativa uma div quando o email já existir no banco
+      docExiste: false,        //ativa uma div quando o CPF já existir no banco
+      showModal: false, //ativa uma div quando o cadastro for bem sucedido
+      getPerfil: null,            //armazena o email, se existir no banco
+      getPF: null,              //armazena o cpf, se existir no banco
+      pf: {
         nome: '',
         nascimento: '',
         cpf: '',
@@ -181,7 +184,7 @@ export default {
         senha: '',
         repetirSenha: '',
       },
-      cep: '',
+      cep: '', // API de CEP
       endereco: {
         cep: '',
         cidade: '',
@@ -227,30 +230,101 @@ export default {
     this.atualizarClasse();
   },
   methods: {
-    cadastrar() {
-      if (this.campoVazio()) {
-        this.campoVazioAlerta =true;
-        return;
-      }
-      if(this.confereSenha()){
-        this.senhaInvalida = true; 
-        return;
-      }
-      
-    },  
-    confereSenha(){
+    async cadastrar() {
+      this.campoVazioAlerta = false;
       this.senhaInvalida = false;
-      if (this.login.senha != this.login.repetirSenha){
+      this.docExiste = false;
+      this.emailExiste = false;
+      this.showModal = false;
+
+      if (this.campoVazio()) {
+        this.campoVazioAlerta = true;
+        return;
+      }
+      if (this.confereSenha()) {
+        this.senhaInvalida = true;
+        return;
+      }
+
+
+      this.getPF = await this.getPFByCPF()
+      if (this.getPF.cpf == this.pf.cpf) {
+        this.docExiste = true;
+        this.pf.cpf = "";
+        return;
+      }
+
+      this.getPerfil = await this.getPerfilByEmail()
+      if (this.getPerfil.email == this.login.email) {
+        this.emailExiste = true;
+        this.login.email = "";
+        return;
+      }
+      try {
+        const response = await axios.post('http://127.0.0.1:5174/createPerfil', {
+          email: this.login.email,
+          senha: this.login.senha,
+          tipo_perfil: this.perfil,
+          tipo_persona: this.persona
+        });
+      } catch (err) {
+        console.log(err);
+      }
+
+      this.getPerfil = await this.getPerfilByEmail()
+      try {
+        const response = await axios.post('http://127.0.0.1:5174/createPF', {
+          cod_perfil: this.getPerfil.cod_perfil,
+          cpf: this.pf.cpf,
+          rg: this.pf.rg,
+          nome: this.pf.nome,
+          data_nascimento: this.pf.nascimento,
+          telefone: this.pf.telefone,
+          cep: this.endereco.cep,
+          rua: this.endereco.rua,
+          numero: this.endereco.numero,
+          bairro: this.endereco.bairro,
+          cidade: this.endereco.cidade,
+          estado: this.endereco.estado
+        })
+      } catch (err) {
+        console.log(err);
+      }
+
+      this.showModal = true;
+      this.$router.push('/acesse')
+    },
+
+    async getPerfilByEmail() {
+      try {
+        const response = await axios.get(`http://127.0.0.1:5174/perfil/${this.login.email}`);
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async getPFByCPF() {
+      try {
+        const response = await axios.get(`http://127.0.0.1:5174/pessoafisica/${this.pf.cpf}`);
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    confereSenha() {
+      if (this.login.senha != this.login.repetirSenha) {
         return true;
       }
-      return false;    },
-    
+      return false;
+    },
+
     campoVazio() {
-      this.campoVazioAlerta = false; 
-      for (const propriedade in this.dc) {
-        if (this.dc.hasOwnProperty(propriedade)) {
-          if (!this.dc[propriedade]) {
-            console.log(`${propriedade} está vazio`);            
+      for (const propriedade in this.pf) {
+        if (this.pf.hasOwnProperty(propriedade)) {
+          if (!this.pf[propriedade]) {
+            console.log(`${propriedade} está vazio`);
             return true;
           }
         }
@@ -273,13 +347,6 @@ export default {
       }
       return false;
     },
-    atualizarClasse() {
-      // Obtenha a largura da tela
-      const larguraDaTela = window.innerWidth;
-
-      // Determine a classe com base na largura da tela
-      this.classeNormal = larguraDaTela < 950 ? 'col col-12 pt-3' : 'col col-md-6 pt-3';
-    },
     consultarCEP() {
       const cep = this.removeMascaraCEP(this.endereco.cep);
       const url = `https://viacep.com.br/ws/${cep}/json/`;
@@ -287,7 +354,6 @@ export default {
       fetch(url)
         .then(response => response.json())
         .then(data => {
-
           const estadoEncontrado = this.estados.find(estado => estado.sigla == data.uf)
           this.endereco = {
             cep: data.cep,
@@ -312,12 +378,24 @@ export default {
     },
     removeMascaraCEP(cepa) {
       return cepa.replace(/\D/g, '')
-    }
+    },
+    atualizarClasse() {
+      // Obtenha a largura da tela
+      const larguraDaTela = window.innerWidth;
+      // Determine a classe com base na largura da tela
+      this.classeNormal = larguraDaTela < 950 ? 'col col-12 pt-3' : 'col col-md-6 pt-3';
+    },
+    steps(etapa) {
+      this.step = etapa;
+      this.$emit("setEtapa", this.step);
+    },
   },
+
   beforeUnmount() {
     // Remova o ouvinte de redimensionamento quando o componente for destruído
     window.removeEventListener('resize', this.atualizarClasse);
   }
+
 };
 </script>
 

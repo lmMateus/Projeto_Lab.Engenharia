@@ -26,12 +26,6 @@
       </div>
     </div>
   </div>
-  <div>
-    <h2>Etapa 3: PJ</h2>
-    <p>Perfil Escolhido: {{ perfil }}</p>
-    <p>Persona Escolhida: {{ persona }}</p>
-    <button @click="concluirCadastro">Concluir Cadastro</button>
-  </div>
   <section class="p-3" style="background-color: #4e6786;">
     <div class="container h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -40,6 +34,15 @@
           <div class="card" style="border-radius: 1rem;">
             <div class="row  g-0">
               <form class="ps-3 pe-2 pt-4 pb-5" action="">
+                <div v-if="campoVazioAlerta" class="alert alert-danger mt-3" role="alert">
+                  Preencha todos os campos!
+                </div>
+                <div v-if="emailExiste" class="alert alert-danger mt-3" role="alert">
+                  Esse e-mail já foi cadastrado!
+                </div>
+                <div v-if="docExiste" class="alert alert-danger mt-3" role="alert">
+                  Esse CNPJ já foi cadastrado!
+                </div>
                 <h3><b>Dados Cadastrais</b></h3>
 
                 <div class="form-row row mb-3">
@@ -96,18 +99,21 @@
                 <div class="form-row row">
                   <div class="form-group col-md-8">
                     <label for=""><b>E-mail</b></label>
-                    <input type="text" class="form-control" id="email" v-model="pj.email">
+                    <input type="email" class="form-control" id="email" v-model="login.email">
                   </div>
                 </div>
 
                 <div class="form-row row">
+                  <div v-if="senhaInvalida" class="alert alert-danger mt-3" role="alert">
+                    Senha inválida!
+                  </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Senha</b></label>
-                    <input type="text" class="form-control" id="">
+                    <input type="password" class="form-control" id="senha" v-model="login.senha">
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Repitir Senha</b></label>
-                    <input type="text" class="form-control" id="">
+                    <input type="password" class="form-control" id="rSenha" v-model="login.repetirSenha">
                   </div>
                   <div class="form-check col-md-4">
                     <input type="checkbox" class="form-check-input" id="checkBox" v-model="checkbox">
@@ -162,7 +168,7 @@
                 </div>
                 <div class="form-row row">
                   <div class="form-group  gap-2 col-4 mx-auto mt-4">
-                    <button class="btn btn-secondary">Cadastrar</button>
+                    <button class="btn btn-secondary" @click="cadastrar" type="button">Cadastrar</button>
                   </div>
                 </div>
               </form>
@@ -177,7 +183,8 @@
 </template>
 
 <script>
-import { mask } from 'vue-the-mask'
+import { mask } from 'vue-the-mask';
+import axios from 'axios';
 export default {
   directives: { mask },
   props: {
@@ -186,10 +193,34 @@ export default {
   },
   data() {
     return {
-      personaSelecionada: null,
       step: null,
       classeNormal: '',
+      campoVazioAlerta: false, //Ativa uma div quando os campos estiverem vazios
+      senhaInvalida: false,    //ativa uma div quando as senha estiverem invalidas
+      emailExiste: false,      //ativa uma div quando o email já existir no banco
+      docExiste: false,        //ativa uma div quando o Cpj já existir no banco
+      showModal: false, //ativa uma div quando o cadastro for bem sucedido
+      getPerfil: null,            //armazena o email, se existir no banco
+      getPJ: null,              //armazena o cpj, se existir no banco
       checkbox: false,
+      cnpj: '',
+      pj: {
+        cnpj: '',
+        fundacao: '',
+        tipo: '',
+        razao_social: '',
+        nome_fantasia: '',
+        capital_social: '',
+        atividade: '',
+        porte: '',
+        natureza_juridica: '',
+        telefone: '',
+      },
+      login: {
+        email: '',
+        senha: '',
+        repetirSenha: '',
+      },
       cep: '',
       endereco: {
         cep: '',
@@ -199,7 +230,6 @@ export default {
         bairro: '',
         numero: '',
       },
-      cepa: null,
       estados: [
         { nome: 'Acre', sigla: 'AC' },
         { nome: 'Alagoas', sigla: 'AL' },
@@ -229,20 +259,6 @@ export default {
         { nome: 'Sergipe', sigla: 'SE' },
         { nome: 'Tocantins', sigla: 'TO' },
       ],
-      cnpj: '',
-      pj: {
-        cnpj: '',
-        fundacao: '',
-        tipo: '',
-        razao_social: '',
-        nome_fantasia: '',
-        capital_social: '',
-        atividade: '',
-        porte: '',
-        natureza_juridica: '',
-        telefone: '',
-        email: '',
-      },
     };
   },
   mounted() {
@@ -257,6 +273,125 @@ export default {
 
       // Determine a classe com base na largura da tela
       this.classeNormal = larguraDaTela < 950 ? 'col col-12 pt-3' : 'col col-md-6 pt-3';
+    },
+    async cadastrar() {
+      this.campoVazioAlerta = false;
+      this.senhaInvalida = false;
+      this.docExiste = false;
+      this.emailExiste = false;
+      this.showModal = false;
+
+      if (this.campoVazio()) {
+        this.campoVazioAlerta = true;
+        return;
+      }
+      if (this.confereSenha()) {
+        this.senhaInvalida = true;
+        return;
+      }
+
+
+      this.getPJ = await this.getPJByCNPJ()
+      if (this.getPJ.cnpj == this.pj.cnpj) {
+        this.docExiste = true;
+        this.pj.cnpj = "";
+        return;
+      }
+
+      this.getPerfil = await this.getPerfilByEmail()
+      if (this.getPerfil.email == this.login.email) {
+        this.emailExiste = true;
+        this.login.email = "";
+        return;
+      }
+      try {
+        const response = await axios.post('http://127.0.0.1:5174/createPerfil', {
+          email: this.login.email,
+          senha: this.login.senha,
+          tipo_perfil: this.perfil,
+          tipo_persona: this.persona
+        });
+      } catch (err) {
+        console.log(err);
+      }
+
+      this.getPerfil = await this.getPerfilByEmail()
+      try {
+        const response = await axios.post('http://127.0.0.1:5174/createPJ', {
+          cod_perfil: this.getPerfil.cod_perfil,
+          cnpj: this.pj.cnpj,
+          ramo_atividade: this.pj.atividade,
+          capital_social: this.pj.capital_social,
+          tipo_empresa: this.pj.tipo,
+          razao_social: this.pj.razao_social,
+          nome_fantasia: this.pj.nome_fantasia,
+          natureza_juridica: this.pj.natureza_juridica,
+          porte_empresa: this.pj.porte,
+          data_fundacao: this.pj.fundacao,
+          telefone: this.pj.telefone,
+          cep: this.endereco.cep,
+          rua: this.endereco.rua,
+          numero: this.endereco.numero,
+          bairro: this.endereco.bairro,
+          cidade: this.endereco.cidade,
+          estado: this.endereco.estado
+        })
+      } catch (err) {
+        console.log(err);
+      }
+
+      this.$router.push('/acesse')
+    },
+    async getPerfilByEmail() {
+      try {
+        const response = await axios.get(`http://127.0.0.1:5174/perfil/${this.login.email}`);
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async getPJByCNPJ() {
+      try {
+        const response = await axios.get(`http://127.0.0.1:5174/pessoajuridica/${this.pj.cnpj}`);
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    confereSenha() {
+      if (this.login.senha != this.login.repetirSenha) {
+        return true;
+      }
+      return false;
+    },
+    campoVazio() {
+      for (const propriedade in this.pj) {
+        if (this.pj.hasOwnProperty(propriedade)) {
+          if (!this.pj[propriedade]) {
+            console.log(`${propriedade} está vazio`);
+            return true;
+          }
+        }
+      }
+      for (const propriedade in this.login) {
+        if (this.login.hasOwnProperty(propriedade)) {
+          if (!this.login[propriedade]) {
+            console.log(`${propriedade} está vazio`);
+            return true;
+          }
+        }
+      }
+      for (const propriedade in this.endereco) {
+        if (this.endereco.hasOwnProperty(propriedade)) {
+          if (!this.endereco[propriedade]) {
+            console.log(`${propriedade} está vazio`);
+            return true;
+          }
+        }
+      }
+      return false;
     },
     consultarCNPJ() {
       const cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
@@ -284,7 +419,7 @@ export default {
             cidade: data.estabelecimento.cidade.nome,
             rua: data.estabelecimento.logradouro,
             estado: estadoEncontrado.nome,
-            bairro:data.estabelecimento.bairro,
+            bairro: data.estabelecimento.bairro,
             numero: data.estabelecimento.numero
           }
         })
@@ -329,7 +464,11 @@ export default {
     },
     removerMascaraCEP(cepa) {
       return cepa.replace(/\D/g, '')
-    }
+    },
+    steps(etapa) {
+      this.step = etapa;
+      this.$emit("setEtapa", this.step);
+    },
   },
   beforeUnmount() {
     // Remova o ouvinte de redimensionamento quando o componente for destruído
