@@ -24,10 +24,10 @@
   <div id="carouselExampleInterval" class="carousel slide " data-bs-ride="carousel">
     <div class="carousel-inner custom-carousel">
       <div class="carousel-item active" data-bs-interval="5000">
-        <img src="../assets/banner1.jpg" class="img-fluid d-block w-100" alt="...">
+        <img src="../assets/banner1_ps.jpg" class="img-fluid d-block w-100 object-fit-cover" alt="...">
       </div>
       <div class="carousel-item" data-bs-interval="5000">
-        <img src="../assets/banner2.jpg" class="img-fluid d-block w-100" alt="...">
+        <img src="../assets/banner2_ps.jpg" class="img-fluid d-block w-100 object-fit-cover" alt="...">
       </div>
     </div>
     <button class="carousel-control-prev d-none d-md-block" type="button" data-bs-target="#carouselExampleInterval"
@@ -41,23 +41,19 @@
       <span class="visually-hidden">Next</span>
     </button>
   </div><br>
-  <div class="card mb-3">
-    <div class="row g-0">
-      <div class="col-12 col-sm-8">
+  <div class="card mb-3 ps-5" >
+    <div class="container d-flex justify-content-center align-items-center col row">
+      <div class="col-sm-6 pe-4">
         <div class="card-body">
-          <h5 class="card-title">Antecipação</h5>
-          <p class="card-text">
-            Já pensou em bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA 
-            bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA 
-            bLA bLA bLA bLA bLA bLA bLA bLA 
-            bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA 
-            bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA bLA 
-
+          <p class="card-text" style="font-size: 23px;">
+            O seu negócio merece o melhor e é justamente isso que lhe oferecemos. 
+            Experimente a liberdade do planejamento financeiro proativo. 
+            <b>Junte-se a nós e antecipe o seu sucesso!</b>
           </p>
         </div>
       </div>
-      <div class="col-12 col-sm-4">
-        <img src="../assets/banner2.jpg" class="img-fluid rounded-start">
+      <div class=" col-sm-4">
+        <img src="../assets/antecipacao.png" class="img-fluid rounded-4">
       </div>
     </div>
   </div>
@@ -106,6 +102,11 @@ img {
   width: auto;
   height: 100%;
 }
+.object-fit-cover {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+    }
 </style>
 
 

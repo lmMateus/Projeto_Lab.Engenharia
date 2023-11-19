@@ -34,10 +34,10 @@
               <div class="col-md-6 col-lg-7 d-flex align-items-center">
                 <div class="card-body p-4 p-lg-5 text-black">
                   <form>
-                    <div class="d-flex align-items-center mb-3 pb-1">
+                    <!-- <div class="d-flex align-items-center mb-3 pb-1">
                       <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
                       <span class="h1 fw-bold mb-0">Logo</span>
-                    </div>
+                    </div> -->
                     <div class="d-flex justify-content-center">
                       <div>
                         <p style="color: #393f81"> Ainda não é cadastrado?
@@ -56,8 +56,8 @@
                     <div class="pt-1 mb-4">
                       <button class="btn btn-dark btn-lg float-start w-100 mb-5" type="button">Login</button>
                     </div>
-                    <router-link class="nav-link active formA" aria-current="page" to="/">Termos de uso.</router-link>
-                    <router-link class="nav-link active formA" aria-current="page" to="/">Política de
+                    <router-link class="nav-link active formA" aria-current="page" to="/termosdeuso">Termos de uso.</router-link>
+                    <router-link class="nav-link active formA" aria-current="page" to="/politicadeprivacidade">Política de
                       privacidade.</router-link>
                   </form>
 
