@@ -68,7 +68,12 @@
 
 <script>
 export default {
-  data() {
+  props: {
+    perfil: String,
+    persona: String,    
+  },
+  emits: ['escolhaPerfilPersona', 'setEtapa'],
+  data() {    
     return {
       perfilSelecionado: null,
       step: null,

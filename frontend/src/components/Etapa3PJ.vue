@@ -49,7 +49,7 @@
                   <div class="form-group col-md-4">
                     <label for=""><b>CNPJ</b></label>
                     <input type="text" class="form-control" id="cnpj" v-mask="'##.###.###/####-##'" @blur="consultarCNPJ"
-                      v-model="pj.cnpj">
+                      v-model="pj.cnpj" @focus="limpaCamposG">
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Fundação</b></label>
@@ -93,8 +93,8 @@
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Telefone</b></label>
-                    <input type="text" class="form-control" id="telefone" 
-                    v-model="pj.telefone" v-mask="['(##) ####-####', '(##) #####-####']">
+                    <input type="text" class="form-control" id="telefone" v-model="pj.telefone"
+                      v-mask="['(##) ####-####', '(##) #####-####']">
                   </div>
                 </div>
                 <div class="form-row row">
@@ -184,7 +184,8 @@
 </template>
 
 <script>
-import { mask } from 'vue-the-mask';
+//@ts-ignore
+import {mask} from 'vue-the-mask'
 import axios from 'axios';
 export default {
   directives: { mask },
@@ -192,6 +193,7 @@ export default {
     perfil: String,
     persona: String,
   },
+  emits: ['escolhaPerfilPersona', 'setEtapa'],
   data() {
     return {
       step: null,
@@ -281,7 +283,6 @@ export default {
       this.docExiste = false;
       this.emailExiste = false;
       this.showModal = false;
-
       if (this.campoVazio()) {
         this.campoVazioAlerta = true;
         return;
@@ -290,8 +291,6 @@ export default {
         this.senhaInvalida = true;
         return;
       }
-
-
       this.getPJ = await this.getPJByCNPJ()
       this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
       if (this.getPJ.cnpj == this.cnpj) {
@@ -299,7 +298,6 @@ export default {
         this.limpaCamposG();
         return;
       }
-
       this.getPerfil = await this.getPerfilByEmail()
       if (this.getPerfil.email == this.login.email) {
         this.emailExiste = true;
@@ -316,10 +314,8 @@ export default {
       } catch (err) {
         console.log(err);
       }
-
       this.getPerfil = await this.getPerfilByEmail()
       this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
-      console.log(this.pj.telefone)
       try {
         const response = await axios.post('http://127.0.0.1:5174/createPJ', {
           cod_perfil: this.getPerfil.cod_perfil,
@@ -358,7 +354,6 @@ export default {
 
     async getPJByCNPJ() {
       this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
-      console.log(this.cnpj)
       try {
         const response = await axios.get(`http://127.0.0.1:5174/pessoajuridica/${this.cnpj}`);
         return response.data;
@@ -406,28 +401,31 @@ export default {
 
       fetch(url)
         .then(response => response.json())
-        .then(data => {
-          const estadoEncontrado = this.estados.find(estado => estado.sigla == data.estabelecimento.estado.sigla)
-          console.log(estadoEncontrado)
-          this.pj = {           
+        .then(dado => {
+
+          this.pj = {
             cnpj: this.pj.cnpj,
-            fundacao: data.estabelecimento.data_inicio_atividade,
-            tipo: data.estabelecimento.tipo,
-            razao_social: data.razao_social,
-            nome_fantasia: data.estabelecimento.nome_fantasia,
-            capital_social: data.capital_social,
-            atividade: data.estabelecimento.atividade_principal.descricao,
-            porte: data.porte.descricao,
-            natureza_juridica: data.natureza_juridica.descricao,
-            email: data.estabelecimento.email,
+            fundacao: dado.estabelecimento.data_inicio_atividade,
+            tipo: dado.estabelecimento.tipo,
+            razao_social: dado.razao_social,
+            nome_fantasia: dado.estabelecimento.nome_fantasia,
+            capital_social: dado.capital_social,
+            atividade: dado.estabelecimento.atividade_principal.descricao,
+            porte: dado.porte.descricao,
+            natureza_juridica: dado.natureza_juridica.descricao,
+            email: dado.estabelecimento.email,
           }
+          if (dado.length === 0 || !dado.estabelecimento || !dado.estabelecimento.estado) {
+            return;
+          }
+          const estadoEncontrado = this.estados.find(estado => estado.sigla == dado.estabelecimento.estado.sigla)
           this.endereco = {
-            cep: data.estabelecimento.cep,
-            cidade: data.estabelecimento.cidade.nome,
-            rua: data.estabelecimento.logradouro,
+            cep: dado.estabelecimento.cep,
+            cidade: dado.estabelecimento.cidade.nome,
+            rua: dado.estabelecimento.logradouro,
             estado: estadoEncontrado.nome,
-            bairro: data.estabelecimento.bairro,
-            numero: data.estabelecimento.numero
+            bairro: dado.estabelecimento.bairro,
+            numero: dado.estabelecimento.numero
           }
         })
         .catch(error => {
@@ -445,7 +443,6 @@ export default {
       fetch(url)
         .then(response => response.json())
         .then(data => {
-
           const estadoEncontrado = this.estados.find(estado => estado.sigla == data.uf)
           console.log(estadoEncontrado)
           this.endereco = {
@@ -470,7 +467,7 @@ export default {
       }
     },
     limpaCamposG() {
-      this.pj ={
+      this.pj = {
         cnpj: '',
         fundacao: '',
         tipo: '',
@@ -489,7 +486,7 @@ export default {
         repetirSenha: '',
       }
 
-      
+
       this.endereco = {
         cidade: '',
         rua: '',
@@ -497,7 +494,7 @@ export default {
         estado: '',
         numero: '',
       }
-    },
+    },    
     removerMascaraCEP(cepa) {
       return cepa.replace(/\D/g, '')
     },

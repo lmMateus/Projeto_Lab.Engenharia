@@ -46,19 +46,30 @@
                       </div>
                     </div>
                     <div class="form-outline mb-4">
-                      <input type="email" id="" class="form-control form-control-lg" placeholder="E-mail" />
+                      <div v-if="dadosInvalidos" class="alert alert-danger mt-3" role="alert">
+                        E-mail ou senha inválidos!
+                      </div>
+                      <div v-if="campoVazio" class="alert alert-danger mt-3" role="alert">
+                        Preencha e-mail e senha!
+                      </div>
+                      <input type="email" id="email" class="form-control form-control-lg" placeholder="E-mail"
+                        v-model="login.email" />
                     </div>
                     <div class="form-outline">
-                      <input type="password" id="" class="form-control form-control-lg" placeholder="Senha" />
+                      <input type="password" id="senha" class="form-control form-control-lg" placeholder="Senha"
+                        v-model="login.senha" @keyup.enter="logar" />
                     </div>
-                    <router-link class="nav-link active mb-2 formA" aria-current="page" to="/">Esqueceu a
+                    <router-link class="nav-link active mb-2 formA" to="/">Esqueceu a
                       senha?</router-link>
-                    <div class="pt-1 mb-4">
-                      <button class="btn btn-dark btn-lg float-start w-100 mb-5" type="button">Login</button>
+                    <div class="pt-1">
+                      <button class="btn btn-dark btn-lg  w-100 mb-5 mt-3" type="button"
+                        @click="logar">Login</button>
                     </div>
-                    <router-link class="nav-link active formA" aria-current="page" to="/termosdeuso">Termos de uso.</router-link>
-                    <router-link class="nav-link active formA" aria-current="page" to="/politicadeprivacidade">Política de
-                      privacidade.</router-link>
+                      <router-link class="nav-link active formA" to="/termosdeuso">Termos de
+                        uso.</router-link>
+                      <router-link class="nav-link active formA" to="/politicadeprivacidade">Política
+                        de
+                        privacidade.</router-link>
                   </form>
 
                 </div>
@@ -75,6 +86,70 @@
     </div>
   </div>
 </template>
+
+
+
+<script>
+import axios from 'axios';
+import { registerRuntimeCompiler } from 'vue';
+export default {
+  data() {
+    return {
+      dadosInvalidos: false, // ativa div quando campos estiverem errado
+      campoVazio: false, // ativa div quando camp
+      login: {
+        email: '',
+        senha: ''
+      },
+      dados: '',
+    }
+  },
+  methods: {
+    logar() {
+      this.dadosInvalidos = false;
+      this.campoVazio = false;
+
+      if (this.cVazio()) {
+        this.campoVazio = true;
+        return;
+      }
+
+      this.dados = this.getPerfil()
+      this.dados.then(result => {
+        if (result == "") {
+          this.dadosInvalidos = true;
+          return;
+        } else {
+          if (result.senha === this.login.senha) {
+            this.$router.push('/mp')
+          } else {
+            this.dadosInvalidos = true;
+            return;
+          }
+        }
+      })
+
+
+
+
+    },
+    cVazio() {
+      if (this.login.email == "" || this.login.senha == "") {
+        return true;
+      }
+      return false;
+    },
+    async getPerfil() {
+      try {
+        const response = await axios.get(`http://127.0.0.1:5174/perfil/${this.login.email}`);
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+}
+</script>
 <!--  -->
 <style scoped>
 .tamanho {
@@ -110,6 +185,7 @@ img {
   height: 100%;
   width: auto;
   height: 100%;
-}</style>
+}
+</style>
 
 

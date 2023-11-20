@@ -19,7 +19,6 @@
     </div>
   </nav>
   <div>
-    <button @click="voltarEtapa" v-if="etapa == 32">Voltar</button>
     <component :is="componenteAtual" @escolhaPerfilPersona="avançarEtapa" @setEtapa="definirEtapa"
       :perfil="perfilEscolhido" :persona="personaEscolhida" />
   </div>
@@ -36,8 +35,8 @@ export default {
   data() {
     return {
       etapa: 1,
-      perfilEscolhido: null,
-      personaEscolhida: null,
+      perfilEscolhido: '',
+      personaEscolhida: '',
     };
   },
   computed: {

@@ -61,6 +61,7 @@ export default {
     perfil: String,
     persona: String,    
   },
+  emits: ['escolhaPerfilPersona', 'setEtapa'],
   data() {
     return {
       personaSelecionada: null,

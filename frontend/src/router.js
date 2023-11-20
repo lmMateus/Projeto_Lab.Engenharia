@@ -5,6 +5,7 @@ import Acesse from './pages/Acesse.vue';
 import Cadastro from './pages/Cadastro.vue';
 import TermosDeUso from './pages/TermosDeUso.vue';
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade.vue"; 
+import MarketPlace from "./pages/MarketPlace.vue";
 
 const routes = [
   {path: '/', component: Home},
@@ -12,7 +13,8 @@ const routes = [
   {path: '/acesse', component: Acesse},
   {path: '/cadastro', component: Cadastro},
   {path: '/termosdeuso', component: TermosDeUso},
-  {path: '/politicadeprivacidade', component: PoliticaPrivacidade}
+  {path: '/politicadeprivacidade', component: PoliticaPrivacidade},
+  {path: '/mp', component: MarketPlace},
 
   ];
 
