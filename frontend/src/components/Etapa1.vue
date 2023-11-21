@@ -5,8 +5,8 @@
         <div class="container-fluid p-2 align-items-center">
           <div class="d-flex justify-content-around">
             <button class="btn bg-ligth border-black border border-2  btn-sm rounded-circle"
-              style="width: 2rem; height: 2rem; color: white; background-color: #393E46 ;" data-bs-toggle="collapse" data-bs-target="#company1" aria-expanded="true"
-              aria-controls="company1" @click="steps(1)">
+              style="width: 2rem; height: 2rem; color: white; background-color: #393E46 ;" data-bs-toggle="collapse"
+              data-bs-target="#company1" aria-expanded="true" aria-controls="company1" @click="steps(1)">
               ✓
             </button>
             <span class="bg-my w-25 rounded mt-auto mb-auto me-1 ms-1" style="height: 0.2rem"></span>
@@ -34,8 +34,10 @@
           <div class="card rounded-4">
             <img src="../assets/investidor.png" class="mx-auto d-block img-fluid img w-75 h-auto" alt="Imagem 2">
             <div class="card-body">
-              <h5 class="card-title text-center">Investidor</h5>
-              <p class="card-text">Descrição do Card 1.</p>
+              <h5 class="card-title text-center"><b>Investidor</b></h5>
+              <p class="card-text pt-1 ps-4 pe-4 text-center">
+                <b>Invista em recebíveis</b>. Ganhe retorno financeiro
+                ao investir em títulos de crédito.</p>
             </div>
           </div>
         </div>
@@ -45,8 +47,10 @@
           <div class="card rounded-4">
             <img src="../assets/credor.png" class="mx-auto d-block img-fluid img w-75 h-auto" alt="Imagem 2">
             <div class="card-body">
-              <h5 class="card-title text-center">Credor</h5>
-              <p class="card-text">Descrição do Card 2.</p>
+              <h5 class="card-title text-center"><b>Credor</b></h5>
+              <p class="card-text pt-1 ps-4 pe-4 text-center">
+                <b>Antecipe seus recebíveis</b>. Obtenha liquidez imediata
+                ao antecipar pagamentos futuros.</p>
             </div>
           </div>
         </div>
@@ -56,8 +60,10 @@
           <div class="card rounded-4">
             <img src="../assets/combinado.png" class="mx-auto d-block img-fluid img w-75 h-auto" alt="Imagem 2">
             <div class="card-body">
-              <h5 class="card-title text-center">Ambos</h5>
-              <p class="card-text">Descrição do Card 3.</p>
+              <h5 class="card-title text-center"><b>Ambos</b></h5>
+              <p class="card-text pt-1 ps-4 pe-4 text-center">
+                <b>Antecipe ou invista.</b> Equilibre liquidez e investimento
+                em um só lugar.</p>
             </div>
           </div>
         </div>
@@ -70,10 +76,10 @@
 export default {
   props: {
     perfil: String,
-    persona: String,    
+    persona: String,
   },
   emits: ['escolhaPerfilPersona', 'setEtapa'],
-  data() {    
+  data() {
     return {
       perfilSelecionado: null,
       step: null,

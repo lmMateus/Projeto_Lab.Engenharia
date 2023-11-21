@@ -284,14 +284,14 @@ export default {
       this.docExiste = false;
       this.emailExiste = false;
       this.showModal = false;
-      // if (this.campoVazio()) {
-      //   this.campoVazioAlerta = true;
-      //   return;
-      // }
-      // if (this.confereSenha()) {
-      //   this.senhaInvalida = true;
-      //   return;
-      // }
+      if (this.campoVazio()) {
+        this.campoVazioAlerta = true;
+        return;
+      }
+      if (this.confereSenha()) {
+        this.senhaInvalida = true;
+        return;
+      }
       this.getPJ = await this.getPJByCNPJ()
       this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
       if (this.getPJ.cnpj == this.cnpj) {
@@ -341,7 +341,6 @@ export default {
       } catch (err) {
         console.log(err);
       }
-
       this.$router.push('/acesse')
     },
     async getPerfilByEmail() {
