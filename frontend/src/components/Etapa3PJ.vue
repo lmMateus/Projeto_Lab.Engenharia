@@ -185,7 +185,7 @@
 
 <script>
 //@ts-ignore
-import {mask} from 'vue-the-mask'
+import { mask } from 'vue-the-mask'
 import axios from 'axios';
 export default {
   directives: { mask },
@@ -206,6 +206,7 @@ export default {
       getPerfil: null,            //armazena o email, se existir no banco
       getPJ: null,              //armazena o cpj, se existir no banco
       checkbox: false,
+      dadosCnpj: '',
       cnpj: '',
       pj: {
         cnpj: '',
@@ -283,14 +284,14 @@ export default {
       this.docExiste = false;
       this.emailExiste = false;
       this.showModal = false;
-      if (this.campoVazio()) {
-        this.campoVazioAlerta = true;
-        return;
-      }
-      if (this.confereSenha()) {
-        this.senhaInvalida = true;
-        return;
-      }
+      // if (this.campoVazio()) {
+      //   this.campoVazioAlerta = true;
+      //   return;
+      // }
+      // if (this.confereSenha()) {
+      //   this.senhaInvalida = true;
+      //   return;
+      // }
       this.getPJ = await this.getPJByCNPJ()
       this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
       if (this.getPJ.cnpj == this.cnpj) {
@@ -402,36 +403,42 @@ export default {
       fetch(url)
         .then(response => response.json())
         .then(dado => {
-
-          this.pj = {
-            cnpj: this.pj.cnpj,
-            fundacao: dado.estabelecimento.data_inicio_atividade,
-            tipo: dado.estabelecimento.tipo,
-            razao_social: dado.razao_social,
-            nome_fantasia: dado.estabelecimento.nome_fantasia,
-            capital_social: dado.capital_social,
-            atividade: dado.estabelecimento.atividade_principal.descricao,
-            porte: dado.porte.descricao,
-            natureza_juridica: dado.natureza_juridica.descricao,
-            email: dado.estabelecimento.email,
-          }
-          if (dado.length === 0 || !dado.estabelecimento || !dado.estabelecimento.estado) {
-            return;
-          }
-          const estadoEncontrado = this.estados.find(estado => estado.sigla == dado.estabelecimento.estado.sigla)
-          this.endereco = {
-            cep: dado.estabelecimento.cep,
-            cidade: dado.estabelecimento.cidade.nome,
-            rua: dado.estabelecimento.logradouro,
-            estado: estadoEncontrado.nome,
-            bairro: dado.estabelecimento.bairro,
-            numero: dado.estabelecimento.numero
-          }
+          this.dadosCnpj = dado;
+          this.preencheDadosCNPJ();
         })
         .catch(error => {
           console.log('Ocorreu um erro: ', error);
         });
-
+    },
+    preencheDadosCNPJ() {
+      if (this.dadosCnpj.status == 400) {
+        console.log("CNPJ não cadastrado na base de dados!")
+      } else if (this.dadosCnpj.status == 429) {
+        console.log("Excedido o limite máximo de 3 consultas por minuto!")
+      } else {
+        console.log("teste");
+        this.pj = {
+          cnpj: this.pj.cnpj,
+          fundacao: this.dadosCnpj.estabelecimento.data_inicio_atividade,
+          tipo: this.dadosCnpj.estabelecimento.tipo,
+          razao_social: this.dadosCnpj.razao_social,
+          nome_fantasia: this.dadosCnpj.estabelecimento.nome_fantasia,
+          capital_social: this.dadosCnpj.capital_social,
+          atividade: this.dadosCnpj.estabelecimento.atividade_principal.descricao,
+          porte: this.dadosCnpj.porte.descricao,
+          natureza_juridica: this.dadosCnpj.natureza_juridica.descricao,
+          email: this.dadosCnpj.estabelecimento.email,
+        }
+        const estadoEncontrado = this.estados.find(estado => estado.sigla == this.dadosCnpj.estabelecimento.estado.sigla)
+        this.endereco = {
+          cep: this.dadosCnpj.estabelecimento.cep,
+          cidade: this.dadosCnpj.estabelecimento.cidade.nome,
+          rua: this.dadosCnpj.estabelecimento.logradouro,
+          estado: estadoEncontrado.nome,
+          bairro: this.dadosCnpj.estabelecimento.bairro,
+          numero: this.dadosCnpj.estabelecimento.numero
+        }
+      }
     },
     removerMascaraCNPJ(cnpj) {
       return cnpj.replace(/[^\d]/g, '');
@@ -494,7 +501,7 @@ export default {
         estado: '',
         numero: '',
       }
-    },    
+    },
     removerMascaraCEP(cepa) {
       return cepa.replace(/\D/g, '')
     },

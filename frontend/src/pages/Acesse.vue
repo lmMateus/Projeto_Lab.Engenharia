@@ -59,8 +59,8 @@
                       <input type="password" id="senha" class="form-control form-control-lg" placeholder="Senha"
                         v-model="login.senha" @keyup.enter="logar" />
                     </div>
-                    <router-link class="nav-link active mb-2 formA" to="/">Esqueceu a
-                      senha?</router-link>
+                    <!-- <router-link class="nav-link active mb-2 formA" to="/">Esqueceu a
+                      senha?</router-link> -->
                     <div class="pt-1">
                       <button class="btn btn-dark btn-lg  w-100 mb-5 mt-3" type="button"
                         @click="logar">Login</button>
