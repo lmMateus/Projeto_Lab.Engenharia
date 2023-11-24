@@ -8,7 +8,7 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-lg-end">
           <li>
-            <router-link class="dropdown-item dropdown" to="/perfil">
+            <router-link class="dropdown-item" to="/perfil">
               <i class="bi bi-person"></i> Perfil
             </router-link>
           </li>
@@ -26,13 +26,50 @@
       </div>
     </div>
   </nav>
+  <div>
+    <component :is="componenteAtual"/>
+  </div>
 </template>
 
-<style scoped>
-.menu_icon{
-  background-color: white;
-  
+<script>
+import PerfilPF from "../components/EditaPerfilPF.vue";
+import PerfilPJ from "../components/EditaPerfilPJ.vue";
+export default {
+  data(){
+    return{
+      perfil:"",
+      componetente:"",
+    }
+  },
+  computed: {
+    componenteAtual() {
+      const datas = JSON.parse(sessionStorage.getItem("cod_perfil"))
+      if(datas.tipo_persona == 'pf'){
+        return PerfilPF
+      }else {
+        return PerfilPJ
+      }
+    },
+  },
 }
+</script>
+
+<style scoped>
+.absolute-div {
+  background-color: aqua;
+  height: 400px;
+  width: 220px;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.menu_icon {
+  background-color: white;
+
+}
+
 .bg_color {
   background-color: #393E46;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -51,5 +88,4 @@ a {
   padding: 0;
   margin: 0;
 }
-
 </style>

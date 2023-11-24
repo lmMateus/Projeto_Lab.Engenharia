@@ -6,7 +6,8 @@ import Cadastro from './pages/Cadastro.vue';
 import TermosDeUso from './pages/TermosDeUso.vue';
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade.vue"; 
 import MarketPlace from "./pages/MarketPlace.vue";
-import RecuperacaoSenha from "./pages/RecuperacaoSenha.vue";
+import Perfil from "./pages/Perfil.vue";
+import Titulos from "./pages/Titulos.vue";
 
 const routes = [
   {path: '/', component: Home},
@@ -16,6 +17,9 @@ const routes = [
   {path: '/termosdeuso', component: TermosDeUso},
   {path: '/politicadeprivacidade', component: PoliticaPrivacidade},
   {path: '/marketplace', component: MarketPlace},
+  {path: '/perfil', component: Perfil},
+  {path: '/titulos', component: Titulos},
+
   ];
 
 const router = createRouter({

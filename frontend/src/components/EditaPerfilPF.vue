@@ -1,31 +1,4 @@
 <template>
-  <div class="container-fluid mt-5">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="container-fluid p-2 align-items-center">
-          <div class="d-flex justify-content-around">
-            <button class="btn bg-ligth border-black border border-2  btn-sm rounded-circle"
-              style="width: 2rem; height: 2rem; color: white; background-color: #393E46" data-bs-toggle="collapse"
-              data-bs-target="#company1" aria-expanded="true" aria-controls="company1" @click="steps(1)">
-              ✓
-            </button>
-            <span class="bg-my w-25 rounded mt-auto mb-auto me-1 ms-1" style="height: 0.2rem"></span>
-            <button class="btn bg-ligth border-black border border-2  btn-sm rounded-circle"
-              style="width: 2rem; height: 2rem; color: white; background-color: #393E46" data-bs-toggle="collapse"
-              data-bs-target="#company2" aria-expanded="true" aria-controls="company2" @click="steps(2)">
-              ✓
-            </button>
-            <span class="bg-my w-25 rounded mt-auto mb-auto me-1 ms-1" style="height: 0.2rem"></span>
-            <button class="btn bg-ligth border-black border border-2  btn-sm rounded-circle"
-              style="width: 2rem; height: 2rem; color: white; background-color: #393E46" data-bs-toggle="collapse"
-              data-bs-target="#company3" aria-expanded="false" aria-controls="company3" @click="steps(3)">
-              ✓
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <section class="p-3" style="background-color: #4e6786;">
     <div class="container h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -160,11 +133,6 @@ import axios from "axios";
 import { mask } from 'vue-the-mask'
 export default {
   directives: { mask },
-  props: {
-    perfil: String,
-    persona: String,
-  },
-  emits: ['escolhaPerfilPersona', 'setEtapa'],
   data() {
     return {
       step: null,
@@ -233,6 +201,9 @@ export default {
     window.addEventListener('resize', this.atualizarClasse);
 
     this.atualizarClasse();
+  },
+  computed(){
+    
   },
   methods: {
     async cadastrar() {
@@ -412,10 +383,6 @@ export default {
       const larguraDaTela = window.innerWidth;
       // Determine a classe com base na largura da tela
       this.classeNormal = larguraDaTela < 950 ? 'col col-12 pt-3' : 'col col-md-6 pt-3';
-    },
-    steps(etapa) {
-      this.step = etapa;
-      this.$emit("setEtapa", this.step);
     },
   },
 

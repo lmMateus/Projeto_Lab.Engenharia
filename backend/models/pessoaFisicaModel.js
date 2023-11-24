@@ -30,6 +30,21 @@ export const getPessoaFisicaCPF = (cpf, result) => {
     }
   );
 };
+
+export const getPessoaFisicaRG = (rg, result) => {
+  db.query(    
+    "SELECT * FROM PESSOA_FISICA WHERE rg = ?",
+    rg,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      } else {
+        result(null, results[0])
+      }
+    }
+  );
+};
 //inserts
 
 export const insertPF = (data, result) => {

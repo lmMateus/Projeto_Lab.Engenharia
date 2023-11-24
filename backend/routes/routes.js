@@ -8,6 +8,7 @@ import {
 
 import{
   showPFByCPF,
+  showPFByRG,
   createPF,
 } from "../controllers/pessoaFisica.js";
 
@@ -17,10 +18,16 @@ import{
 } from "../controllers/pessoaJuridica.js";
 //iniciando rota express
 const router = express.Router();
+//Perfil
 router.post('/createPerfil', createPerfil);
 router.get('/perfil/:email', showPerfilByEmail);
-router.get('/pessoafisica/:cpf', showPFByCPF);
+
+//Pessoa Fisica
+router.get('/pessoafisicacpf/:cpf', showPFByCPF);
+router.get('/pessoafisicarg/:rg', showPFByRG);
 router.post('/createPF', createPF);
+
+//Pessoa Juridica
 router.get('/pessoajuridica/:cnpj', showPJByCNPJ);
 router.post('/createPJ', createPJ);
 

@@ -4,6 +4,7 @@ import {
   // updatePFById,
   // deletePFById,
   getPessoaFisicaCPF,
+  getPessoaFisicaRG,
 } from "../models/pessoaFisicaModel.js"; 
 
 // export const showPFById = (req, res) => {
@@ -18,6 +19,16 @@ import {
 
 export const showPFByCPF = (req, res) => {
   getPessoaFisicaCPF(req.params.cpf,(err,results)=>{
+    if(err){
+      res.send(err);
+    }else{
+      res.json(results);
+    }
+  });
+};
+
+export const showPFByRG = (req, res) => {
+  getPessoaFisicaRG(req.params.rg,(err,results)=>{
     if(err){
       res.send(err);
     }else{

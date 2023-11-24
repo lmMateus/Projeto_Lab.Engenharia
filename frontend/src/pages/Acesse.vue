@@ -120,7 +120,9 @@ export default {
           return;
         } else {
           if (result.senha === this.login.senha) {
-            this.$router.push('/mp')
+            const objecto = JSON.stringify(result)
+            sessionStorage.setItem('cod_perfil', objecto)
+            this.$router.push('/marketplace')
           } else {
             this.dadosInvalidos = true;
             return;
