@@ -516,7 +516,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .bg-my {
   background-color: rgb(145, 145, 145);
 }

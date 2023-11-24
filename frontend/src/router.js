@@ -6,6 +6,7 @@ import Cadastro from './pages/Cadastro.vue';
 import TermosDeUso from './pages/TermosDeUso.vue';
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade.vue"; 
 import MarketPlace from "./pages/MarketPlace.vue";
+import RecuperacaoSenha from "./pages/RecuperacaoSenha.vue";
 
 const routes = [
   {path: '/', component: Home},
@@ -14,8 +15,7 @@ const routes = [
   {path: '/cadastro', component: Cadastro},
   {path: '/termosdeuso', component: TermosDeUso},
   {path: '/politicadeprivacidade', component: PoliticaPrivacidade},
-  {path: '/mp', component: MarketPlace},
-
+  {path: '/marketplace', component: MarketPlace},
   ];
 
 const router = createRouter({

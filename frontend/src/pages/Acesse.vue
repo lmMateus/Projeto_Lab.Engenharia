@@ -41,7 +41,7 @@
                     <div class="d-flex justify-content-center">
                       <div>
                         <p style="color: #393f81"> Ainda não é cadastrado?
-                          <router-link class="active formA" aria-current="page" to="/cadastro">Cadastre-se</router-link>
+                          <router-link class="active color_link" aria-current="page" to="/cadastro">Cadastre-se</router-link>
                         </p>
                       </div>
                     </div>
@@ -59,15 +59,15 @@
                       <input type="password" id="senha" class="form-control form-control-lg" placeholder="Senha"
                         v-model="login.senha" @keyup.enter="logar" />
                     </div>
-                    <!-- <router-link class="nav-link active mb-2 formA" to="/">Esqueceu a
+                    <!-- <router-link class="nav-link active mb-2 color_link" to="/recuperacaosenha">Esqueceu a
                       senha?</router-link> -->
                     <div class="pt-1">
                       <button class="btn btn-dark btn-lg  w-100 mb-5 mt-3" type="button"
                         @click="logar">Login</button>
                     </div>
-                      <router-link class="nav-link active formA" to="/termosdeuso">Termos de
+                      <router-link class="nav-link active color_link" to="/termosdeuso">Termos de
                         uso.</router-link>
-                      <router-link class="nav-link active formA" to="/politicadeprivacidade">Política
+                      <router-link class="nav-link active color_link" to="/politicadeprivacidade">Política
                         de
                         privacidade.</router-link>
                   </form>
@@ -90,8 +90,7 @@
 
 
 <script>
-import axios from 'axios';
-import { registerRuntimeCompiler } from 'vue';
+import axios from 'axios'; // ou o caminho relativo correto
 export default {
   data() {
     return {
@@ -128,10 +127,6 @@ export default {
           }
         }
       })
-
-
-
-
     },
     cVazio() {
       if (this.login.email == "" || this.login.senha == "") {
@@ -162,10 +157,10 @@ export default {
 }
 
 .navLink {
-  color: white
+  color: rgb(255, 255, 255)
 }
 
-.formA {
+.color_link {
   color: #393f81;
 }
 
@@ -173,7 +168,7 @@ export default {
   color: white
 }
 
-.formA:hover {
+.color_link:hover {
   color: #c27c43;
 }
 
