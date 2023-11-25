@@ -117,9 +117,10 @@ export default {
         async confirmarAntecipacao() {
             try {
                 const assinatura = this.obterAssinatura()
+                const dados = JSON.parse(sessionStorage.getItem("perfil"))
                 const response = await axios.post("http://localhost:5174/titulos", {
                     cod_titulo: this.tituloSelecionado.cod_titulo,
-                    cod_perfil_investidor: 1, // Definir o codigo aqui
+                    cod_perfil_investidor: dados.cod_perfil, // Definir o codigo aqui
                     data_antecipacao: this.obterDataFormatada(),
                     assinatura_investidor: assinatura,
                 });
