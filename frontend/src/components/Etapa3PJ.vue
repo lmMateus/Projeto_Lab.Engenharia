@@ -314,7 +314,7 @@ export default {
         });
       } catch (err) {
         console.log(err);
-      }
+      }      
       this.getPerfil = await this.getPerfilByEmail()
       this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
       try {
@@ -329,6 +329,7 @@ export default {
           natureza_juridica: this.pj.natureza_juridica,
           porte_empresa: this.pj.porte,
           data_fundacao: this.pj.fundacao,
+          dados_desatualizados: this.checkbox,
           telefone: this.pj.telefone,
           cep: this.endereco.cep,
           rua: this.endereco.rua,
@@ -336,7 +337,6 @@ export default {
           bairro: this.endereco.bairro,
           cidade: this.endereco.cidade,
           estado: this.endereco.estado,
-          dado_desatualizado: this.checkbox
         })
       } catch (err) {
         console.log(err);
@@ -443,6 +443,9 @@ export default {
       return cnpj.replace(/[^\d]/g, '');
     },
     consultarCEP() {
+      if(this.endereco.cep == null) {
+        return
+      }
       const cep = this.removerMascaraCEP(this.endereco.cep);
       const url = `https://viacep.com.br/ws/${cep}/json/`;
 

@@ -61,10 +61,37 @@ export const updatePerfilById = (data, id, result) => {
       }
   });
 };
+export const updateEmailById = (data, id, result) => {
+  db.query(
+    "UPDATE PERFIL SET email = ? WHERE cod_perfil = ?",
+    [data.email, id],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      }else {
+        result(null, results);
 
+      }
+  });
+};
+export const updateSenhaPerfil = (data, id, result) => {
+  db.query(
+    "UPDATE PERFIL SET senha = ? WHERE cod_perfil = ?",
+    [data.senha, id],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      }else {
+        result(null, results);
+
+      }
+  });
+};
 // Delete Product to Database
 export const deletePerfilById = (id, result) => {
-  db.query("DELETE FROM PERFIL WHERE cod_perfil = ?", [id], (err, results) => {
+  db.query("DELETE FROM PERFIL WHERE cod_perfil = ?", id, (err, results) => {
     if (err) {
       console.log(err);
       result(err, null);

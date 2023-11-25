@@ -376,6 +376,9 @@ export default {
       return false;
     },
     consultarCEP() {
+      if(this.endereco.cep == null) {
+        return
+      }
       const cep = this.removeMascaraCEP(this.endereco.cep);
       const url = `https://viacep.com.br/ws/${cep}/json/`;
 

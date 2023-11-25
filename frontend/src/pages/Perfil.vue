@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg bg_color">
+  <nav class="navbar navbar-expand-lg bg_color" :is="verificacao">
     <div class="container-fluid">
       <router-link class="navbar-brand " to="/marketplace">NapierCapital</router-link>
       <div class="dropdown me-3">
@@ -13,13 +13,13 @@
             </router-link>
           </li>
           <li>
-            <router-link class="dropdown-item" to="/titulos">
+            <router-link class="dropdown-item" to="/gerencia-titulos">
               <i class="bi bi-card-heading"></i> Títulos
             </router-link>
           </li>
           <li>
-            <router-link class="dropdown-item" to="/">
-              <i class="bi bi-door-closed"></i> Encerrar
+            <router-link class="dropdown-item"  @click="encerrarConta" to="">
+              <i class="bi bi-door-closed" ></i> Encerrar
             </router-link>
           </li>
         </ul>
@@ -27,7 +27,7 @@
     </div>
   </nav>
   <div>
-    <component :is="componenteAtual"/>
+    <component :is="componenteAtual" />
   </div>
 </template>
 
@@ -35,22 +35,37 @@
 import PerfilPF from "../components/EditaPerfilPF.vue";
 import PerfilPJ from "../components/EditaPerfilPJ.vue";
 export default {
-  data(){
-    return{
-      perfil:"",
-      componetente:"",
+  data() {
+    return {
+      componetente: "",
     }
   },
   computed: {
+    verificacao(){
+      const datas = JSON.parse(sessionStorage.getItem("perfil"))
+      if(datas == null){
+        this.$router.push('/acesse')
+      }
+    },
     componenteAtual() {
-      const datas = JSON.parse(sessionStorage.getItem("cod_perfil"))
-      if(datas.tipo_persona == 'pf'){
-        return PerfilPF
-      }else {
-        return PerfilPJ
+      const datas = JSON.parse(sessionStorage.getItem("perfil"))
+      if (datas == null) {
+        return
+      } else {
+        if (datas.tipo_persona == 'pf') {
+          return PerfilPF
+        } else {
+          return PerfilPJ
+        }
       }
     },
   },
+  methods : {
+    encerrarConta(){
+      sessionStorage.clear()
+      this.$router.push('/')
+    }
+  }
 }
 </script>
 

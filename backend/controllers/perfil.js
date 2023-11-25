@@ -5,6 +5,8 @@ import {
   insertPerfil,
   updatePerfilById,
   deletePerfilById,
+  updateEmailById,
+  updateSenhaPerfil,
 } from "../models/perfilModel.js";
 
 export const showPerfilByEmail = (req, res) => {
@@ -42,6 +44,28 @@ export const updatePerfil = (req, res) => {
   const data = req.body;
   const id = req.params.id;
   updatePerfilById(data, id, (err, results) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(results);
+    }
+  });
+};
+export const updateEmailPerfil = (req, res) => {
+  const data = req.body;
+  const id = req.params.id;
+  updateEmailById(data, id, (err, results) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(results);
+    }
+  });
+};
+export const updateSenhaById = (req, res) => {
+  const data = req.body;
+  const id = req.params.id;
+  updateSenhaPerfil(data, id, (err, results) => {
     if (err) {
       res.send(err);
     } else {

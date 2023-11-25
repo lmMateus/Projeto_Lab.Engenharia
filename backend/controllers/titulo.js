@@ -1,12 +1,44 @@
 import {
-  getPFByCodPerfil,
-  insertPF,
-  updatePFById,
-  deletePFById,
-} from "../models/tituloModel"; 
+  getAllTitulo,
+  setAntecipaTitulo,
+  setStatusTituloAntecipado,
+} from "../models/tituloModel.js"; 
+
+export const AllTitulo = (req, res) => {
+  getAllTitulo((err, results) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(results);
+    }
+  });
+};
+
+export const AntecipaTitulo = (req, res) => {
+  const data = req.body;
+  setAntecipaTitulo(data,(err,results)=>{
+    if(err){
+      res.send(err);
+    }else{
+      res.json(results);
+    }
+  });
+};
+
+
+export const StatusTituloAntecipado = (req, res) => {
+  const data = req.body;
+  setStatusTituloAntecipado(data,(err,results)=>{
+    if(err){
+      res.send(err);
+    }else{
+      res.json(results);
+    }
+  });
+};
 
 export const showPJById = (req, res) => {
-  getPFByCodPerfil(req.params.id,(err,results)=>{
+  getPFByCodPerfil(req.params.cod_titulo,(err,results)=>{
     if(err){
       res.send(err);
     }else{
@@ -28,8 +60,8 @@ export const createPF = (req, res) => {
 
 export const updatePF = (req, res) => {
   const data = req.body;
-  const id = req.params.id;
-  updatePFById(data, id, (err, results) => {
+  const cod_titulo = req.params.cod_titulo;
+  updatePFById(data, cod_titulo, (err, results) => {
     if (err) {
       res.send(err);
     } else {
@@ -40,7 +72,7 @@ export const updatePF = (req, res) => {
 
 
 export const deletePF = (req, res) => {
-  deletePFById(req.params.id, (err, results) => {
+  deletePFById(req.params.cod_titulo, (err, results) => {
     if (err) {
       res.send(err);
     } else {

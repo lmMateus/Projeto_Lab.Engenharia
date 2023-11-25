@@ -121,7 +121,7 @@ export default {
         } else {
           if (result.senha === this.login.senha) {
             const objecto = JSON.stringify(result)
-            sessionStorage.setItem('cod_perfil', objecto)
+            sessionStorage.setItem('perfil', objecto)
             this.$router.push('/marketplace')
           } else {
             this.dadosInvalidos = true;

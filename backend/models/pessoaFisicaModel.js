@@ -1,21 +1,20 @@
 // importando a conexao
 import db from "../config/database.js";
-
 //gets
-// export const getPFByCodPerfil = (cod_perfil, result) => {
-//   db.query(
-//     "SELECT * FROM PESSOA_FISICA WHERE cod_perfil = ?",
-//     cod_perfil,
-//     (err, results) => {
-//       if (err) {
-//         console.log(err);
-//         result(err, null);
-//       } else {
-//         result(null, results[0])
-//       }
-//     }
-//   );
-// };
+export const getPFByCodPerfil = (id, result) => {
+  db.query(
+    "SELECT * FROM PESSOA_FISICA WHERE cod_perfil = ?",
+    id,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      } else {
+        result(null, results[0])
+      }
+    }
+  );
+};
 export const getPessoaFisicaCPF = (cpf, result) => {
   db.query(    
     "SELECT * FROM PESSOA_FISICA WHERE cpf = ?",
@@ -78,14 +77,46 @@ export const insertPF = (data, result) => {
 //   });
 // };
 
+
+export const updateEnderecoPFById = (data, id, result) => {
+  db.query(
+    "UPDATE PESSOA_FISICA SET cep = ?, rua = ?, numero = ?, bairro = ?, cidade = ?, "+
+      "estado = ? WHERE cod_perfil = ?",
+    [data.cep, data.rua, data.numero, data.bairro,
+       data.cidade, data.estado, id],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      }else {
+        result(null, results);
+
+      }
+  });
+};
+export const updateTelPFById = (data, id, result) => {
+  db.query(
+    "UPDATE PESSOA_FISICA SET telefone = ? WHERE cod_perfil = ?",
+    [data.telefone, id],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      }else {
+        result(null, results);
+
+      }
+  });
+};
+
 // // Delete Product to Database
-// export const deletePFById = (id, result) => {
-//   db.query("DELETE FROM PESSOA_FISICA WHERE cpf = ?", [id], (err, results) => {
-//     if (err) {
-//       console.log(err);
-//       result(err, null);
-//     } else {
-//       result(null, results);
-//     }
-//   });
-// };
+export const deletePFById = (id, result) => {
+  db.query("DELETE FROM PESSOA_FISICA WHERE cod_perfil = ?", id, (err, results) => {
+    if (err) {
+      console.log(err);
+      result(err, null);
+    } else {
+      result(null, results);
+    }
+  });
+};

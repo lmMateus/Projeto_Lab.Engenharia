@@ -2,10 +2,10 @@
 import db from "../config/database.js";
 
 //gets
-export const getTituloByEmail = (cod_perfil, result) => {
+export const getTituloByID = (cod_titulo, result) => {
   db.query(
-    "SELECT * FROM TITULO WHERE cod_perfil = ?",
-    cod_perfil,
+    "SELECT * FROM TITULO WHERE cod_titulo = ?",
+    cod_titulo,
     (err, results) => {
       if (err) {
         console.log(err);
@@ -16,16 +16,17 @@ export const getTituloByEmail = (cod_perfil, result) => {
     }
   );
 };
-export const getTituloByID = (cod_cadastro, result) => {
+
+export const getAllTitulo = (result) => {
+  console.log(result)
   db.query(
-    "SELECT * FROM TITULO WHERE cod_cadastro = ?",
-    cod_cadastro,
+    "SELECT * FROM TITULO WHERE (STATUS_TITULO = 'OFERTADO')",
     (err, results) => {
       if (err) {
         console.log(err);
         result(err, null);
       } else {
-        result(null, results[0])
+        result(null, results)
       }
     }
   );
@@ -46,12 +47,12 @@ export const insertTitulo = (data, result) => {
 };
 
 //updates - email - senha - tipo perfil
-export const updateTituloById = (data, id, result) => {
+export const updateTituloById = (data, cod_titulo, result) => {
   db.query(
     "UPDATE TITULO SET tipo_titulo = ?, data_cadastro = ?, status_titulo = ?, "+
-      "numero = ?, valor = ?, desagio = ? WHERE cod_cadastro = ?",
+      "numero = ?, valor = ?, desagio = ? WHERE cod_titulo = ?",
     [data.tipo_titulo, data.data_cadastro, data.status_titulo, data.numero,
-      data.valor, data.desagio, id],
+      data.valor, data.desagio, cod_titulo],
     (err, results) => {
       if (err) {
         console.log(err);
@@ -64,8 +65,8 @@ export const updateTituloById = (data, id, result) => {
 };
 
 // Delete Product to Database
-export const deleteTituloById = (id, result) => {
-  db.query("DELETE FROM TITULO WHERE cod_cadastro = ?", [id], (err, results) => {
+export const deleteTituloById = (cod_titulo, result) => {
+  db.query("DELETE FROM TITULO WHERE cod_titulo = ?", cod_titulo, (err, results) => {
     if (err) {
       console.log(err);
       result(err, null);
@@ -73,4 +74,31 @@ export const deleteTituloById = (id, result) => {
       result(null, results);
     }
   });
+};
+
+// AntecipaTitulos
+export const setAntecipaTitulo = (data, result) => {
+  db.query("INSERT INTO TITULO_ANTECIPADO SET ?",
+    data,
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      } else {
+        result(null, results);
+      }
+    });
+};
+
+export const setStatusTituloAntecipado = (data, result) => {
+  db.query("UPDATE TITULO SET STATUS_TITULO = ? WHERE COD_TITULO = ?",
+  [data.status_titulo, data.cod_titulo],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      } else {
+        result(null, results);
+      }
+    });
 };

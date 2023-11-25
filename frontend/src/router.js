@@ -18,7 +18,7 @@ const routes = [
   {path: '/politicadeprivacidade', component: PoliticaPrivacidade},
   {path: '/marketplace', component: MarketPlace},
   {path: '/perfil', component: Perfil},
-  {path: '/titulos', component: Titulos},
+  {path: '/gerencia-titulos', component: Titulos},
 
   ];
 

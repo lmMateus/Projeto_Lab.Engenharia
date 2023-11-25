@@ -1,125 +1,189 @@
 <template>
-  <section class="p-3" style="background-color: #4e6786;">
+  <section class="p-3">
     <div class="container h-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100 ">
 
-        <div :class="classeNormal">
-          <div class="card" style="border-radius: 1rem;">
-            <div class="row  g-0">
-              <form class="ps-3 pe-2 pt-4 pb-5" action="">
-                <div v-if="campoVazioAlerta" class="alert alert-danger mt-3" role="alert">
-                  Preencha todos os campos!
-                </div>
-                <div v-if="emailExiste" class="alert alert-danger mt-3" role="alert">
-                  Esse e-mail já foi cadastrado!
-                </div>
-                <div v-if="cpfExiste" class="alert alert-danger mt-3" role="alert">
-                  Esse CPF já foi cadastrado!
-                </div>
-                <div v-if="rgExiste" class="alert alert-danger mt-3" role="alert">
-                  Esse RG já foi cadastrado!
-                </div>
-                <h3><b>Dados Cadastrais</b></h3>
 
-                <div class="form-row row mb-3">
-                  <div class="form-group col-md-8">
-                    <label for=""><b>Nome completo</b></label>
-                    <input type="text" class="form-control" id="nome" v-model="pf.nome">
+        <button class="btn botao-colorido mt-4" @click="infoExibe"><b>Minhas informações</b></button>
+        <div v-if="abaInfo">
+          <div :class="classeNormal">
+            <div class="card" style="border-radius: 1rem;">
+              <div class="row  g-0">
+                <form class="ps-3 pe-2 pt-4" action="">
+                  <div class="form-row row mb-3">
+                    <div class="form-group col-md-4">
+                      <label for=""><b>Nome completo</b></label>
+                      <input type="text" class="form-control" id="nome" v-model="pf.nome" disabled>
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for=""><b>CPF</b></label>
+                      <input type="text" class="form-control" id="cpf" v-mask="'###.###.###-##'" v-model="pf.cpf"
+                        disabled>
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for=""><b>RG</b></label>
+                      <input type="text" class="form-control" id="rg" v-mask="'##.###.###-X'" v-model="pf.rg" disabled>
+                    </div>
                   </div>
-                  <div class="form-group col-md-4">
-                    <label for=""><b>Nascimento</b></label>
-                    <input type="text" class="form-control" id="nascimento" v-mask="'##/##/####'" v-model="pf.nascimento">
-                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div :class="classeNormal">
+            <button class="btn botao-colorido-endereco mt-1 mb-2" @click="enderecoExibe"><b>Alterar endereço</b></button>
+            <div v-if="abaEndereco">
+              <div class="card" style="border-radius: 1rem;">
+                <div class="row  g-0">
+                  <form class="ps-3 pe-2 pt-4 pb-5" action="">
+                    <div v-if="enderecoVazioAlerta" class="alert alert-danger mt-3" role="alert">
+                      Preencha todos os campos!
+                    </div>
+                    <h5><b> Endereço</b></h5>
+                    <div class="form-row row mb-3">
+                      <div class="form-group col-md-6">
+                        <label for=""><b>CEP</b></label>
+                        <input type="text" class="form-control" id="cep" v-mask="'#####-###'" v-model="endereco.cep"
+                          @blur="consultarCEP" @focus="limpaCampos">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for=""><b>Cidade</b></label>
+                        <input type="text" class="form-control" id="cidade" v-model="endereco.cidade">
+                      </div>
+                    </div>
+                    <div class="form-row row mb-3">
+                      <div class="form-group col-md-6">
+                        <label for=""><b>Rua</b></label>
+                        <input type="text" class="form-control" id="rua" v-model="endereco.rua">
+                      </div>
+                      <div class="form-group col-md-6">
+                        <label for=""><b>Estado</b></label>
+                        <select class="form-control" id="estado" v-model="endereco.estado">
+                          <option v-for="estado in estados" :key="estado.sigla" :value="estado.nome">{{ estado.nome }}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-row row mb-3">
+                      <div class="form-group col-md-4">
+                        <label for=""><b>Bairro</b></label>
+                        <input type="text" class="form-control" id="bairro" v-model="endereco.bairro">
+                      </div>
+                      <div class="form-group col-md-2">
+                        <label for=""><b>Número</b></label>
+                        <input type="text" class="form-control" id="numero" v-model="endereco.numero">
+                      </div>
+                    </div>
+                    <div class="form-row row d-flex justify-content-center align-items-center">
+                      <div class="form-group gap-2 col-md-1 mx-auto mt-4">
+                        <button class="btn btn-secondary" @click="salvarEndereco" type="button">Salvar</button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
-
-                <div class="form-row row mb-3">
-                  <div class="form-group col-md-4">
-                    <label for=""><b>CPF</b></label>
-                    <input type="text" class="form-control" id="cpf" v-mask="'###.###.###-##'" v-model="pf.cpf">
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for=""><b>RG</b></label>
-                    <input type="text" class="form-control" id="rg" v-mask="'##.###.###-X'" v-model="pf.rg">
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for=""><b>Telefone</b></label>
-                    <input type="text" class="form-control" id="telefone" v-mask="['(##) ####-####', '(##) #####-####']"
-                      v-model="pf.telefone">
-                  </div>
-                </div>
-
-                <div class="form-row row mb-3">
-                  <div class="form-group col-md-8">
-                    <label for=""><b>E-mail</b></label>
-                    <input type="email" class="form-control" id="email" v-model="login.email">
-                  </div>
-                </div>
-
-                <div class="form-row row">
-                  <div v-if="senhaInvalida" class="alert alert-danger mt-3" role="alert">
-                    Senha inválida!
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for=""><b>Senha</b></label>
-                    <input type="password" class="form-control" id="senha" v-model="login.senha">
-                  </div>
-                  <div class="form-group col-md-4">
-                    <label for=""><b>Repetir Senha</b></label>
-                    <input type="password" class="form-control" id="rSenha" v-model="login.repetirSenha">
-                  </div>
-                </div>
-
-              </form>
+              </div>
             </div>
           </div>
         </div>
-        <div :class="classeNormal">
-          <div class="card" style="border-radius: 1rem;">
-            <div class="row  g-0">
-              <form class="ps-3 pe-2 pt-4 pb-5" action="">
-                <h3><b> Endereço</b></h3>
-                <div class="form-row row mb-3">
-                  <div class="form-group col-md-6">
-                    <label for=""><b>CEP</b></label>
-                    <input type="text" class="form-control" id="cep" v-mask="'#####-###'" v-model="endereco.cep"
-                      @blur="consultarCEP" @focus="limpaCampos">
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for=""><b>Cidade</b></label>
-                    <input type="text" class="form-control" id="cidade" v-model="endereco.cidade">
-                  </div>
-                </div>
 
-                <div class="form-row row mb-3">
-                  <div class="form-group col-md-6">
-                    <label for=""><b>Rua</b></label>
-                    <input type="text" class="form-control" id="rua" v-model="endereco.rua">
+        <button class="btn botao-colorido mt-3 mb-2 " @click="dadosContaExibe"><b>Dados da Conta</b></button>
+        <div v-if="abaDadosConta">
+          <div :class="classeNormal">
+            <div class="card" style="border-radius: 1rem;">
+              <div class="row  g-0">
+                <form class="ps-3 pe-2 pt-4" action="">
+                  <div v-if="dadosVazioAlerta" class="alert alert-danger" role="alert">
+                    Preencha todos os campos!
                   </div>
-                  <div class="form-group col-md-6">
-                    <label for=""><b>Estado</b></label>
-                    <select class="form-control" id="estado" v-model="endereco.estado">
-                      <option v-for="estado in estados" :key="estado.sigla" :value="estado.nome">{{ estado.nome }}
-                      </option>
-                    </select>
+                  <div v-if="emailExiste" class="alert alert-danger" role="alert">
+                    Esse e-mail já foi cadastrado!
                   </div>
-                </div>
+                  <div class="form-row row d-flex justify-content-center align-items-center mb-3">
+                    <div class="form-group col-md-4">
+                      <label for=""><b>E-mail</b></label>
+                      <input type="email" class="form-control" id="email" v-model="login.email">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for=""><b>Telefone</b></label>
+                      <input type="text" class="form-control" id="cpf" v-mask="['(##) ####-####', '(##) #####-####']"
+                        v-model="pf.telefone">
+                    </div>
+                    <div class="form-row row d-flex justify-content-center align-items-center">
+                      <div class="form-group  col-md-1 mx-auto mt-4">
+                        <button class="btn btn-secondary" @click="salvarDadosConta" type="button">Salvar</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <div class="form-row row mb-3">
-                  <div class="form-group col-md-4">
-                    <label for=""><b>Bairro</b></label>
-                    <input type="text" class="form-control" id="bairro" v-model="endereco.bairro">
+        <button class="btn botao-colorido mt-3" @click="segurancaExibe"><b>Segurança</b></button>
+        <div v-if="abaSeguranca">
+          <div :class="classeNormal">
+            <div class="card" style="border-radius: 1rem;">
+              <div class="row g-0">
+                <form class="ps-3 pe-2 pt-4 pb-5" action="">
+                  <div v-if="senhaVazioAlerta" class="alert alert-danger" role="alert">
+                    Preencha todos os campos!
                   </div>
-                  <div class="form-group col-md-2">
-                    <label for=""><b>Número</b></label>
-                    <input type="text" class="form-control" id="numero" v-model="endereco.numero">
+                  <div v-if="senhaInvalida" class="alert alert-danger mt-3" role="alert">
+                    As senha novas devem ser iguais!
                   </div>
-                </div>
-                <div class="form-row row">
-                  <div class="form-group  gap-2 col-4 mx-auto mt-4">
-                    <button class="btn btn-secondary" @click="cadastrar" type="button">Cadastrar</button>
+                  <div v-if="senhaAntigaIncorreta" class="alert alert-danger mt-3" role="alert">
+                    Senha antiga incorreta!
                   </div>
-                </div>
-              </form>
+                  <div class="form-row row row d-flex justify-content-center align-items-center mb-3">
+                    <div class="form-group col-md-6">
+                      <label for=""><b>Senha Antiga</b></label>
+                      <input type="password" class="form-control" id="senhaAntiga" v-model="login.senhaAntiga">
+                    </div>
+                  </div>
+                  <div class="form-row row row d-flex justify-content-center align-items-center mb-3">
+                    <div class="form-group col-md-6">
+                      <label for=""><b>Nova Senha</b></label>
+                      <input type="password" class="form-control" id="senha" v-model="login.senha">
+                    </div>
+                  </div>
+                  <div class="form-row row d-flex justify-content-center align-items-center mb-3">
+                    <div class="form-group col-md-6">
+                      <label for=""><b>Repetir Senha</b></label>
+                      <input type="password" class="form-control" id="rSenha" v-model="login.repetirSenha">
+                    </div>
+                  </div>
+                  <div class="form-row row d-flex justify-content-center align-items-center">
+                    <div class="form-group  col-md-1 mx-auto mt-4">
+                      <button class="btn btn-secondary" @click="salvarSenha" type="button">Salvar</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn botao-colorido mt-4 mb-2 " @click="excluirContaExibe"><b>Excluir conta</b></button>
+        <div v-if="abaExcluirConta">
+          <div :class="classeNormal">
+            <div class="card" style="border-radius: 1rem;">
+              <div class="row  g-0">
+                <form class="ps-3 pe-2 pt-4" action="">
+                  <div class="form-row row d-flex justify-content-center align-items-center mb-3">
+                    <div class="form-group col-md-6">
+                      <p><b>Deseja realmente excluir sua conta?</b></p>
+                      <p>Saiba que todo dado relaciona movimentação de títulos feita pela sua conta será
+                        armazenada para fins de segurança!
+                      </p>
+                    </div>
+                    <div class="form-row row d-flex justify-content-center align-items-center">
+                      <div class="form-group  col-md-3 mx-auto mt-4">
+                        <button class="btn btn-secondary" @click="deletarConta" type="button">Excluir conta</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -135,15 +199,21 @@ export default {
   directives: { mask },
   data() {
     return {
+      abaInfo: false,
+      abaDadosConta: false,
+      abaSeguranca: false,
+      abaEndereco: false,
+      abaExcluirConta: false,
       step: null,
       classeNormal: '',        //Ajusta a classe dos elementos 
-      campoVazioAlerta: false, //Ativa uma div quando os campos estiverem vazios
+
+      enderecoVazioAlerta: false, //Ativa uma div quando os campos estiverem vazios
+      dadosVazioAlerta: false,
+      senhaVazioAlerta: false,
+      senhaAntigaIncorreta: false,
       senhaInvalida: false,    //ativa uma div quando as senha estiverem invalidas
       emailExiste: false,      //ativa uma div quando o email já existir no banco
-      cpfExiste: false,        //ativa uma div quando o CPF já existir no banco
-      rgExiste: false,        //ativa uma div quando o RG já existir no banco
-      showModal: false, //ativa uma div quando o cadastro for bem sucedido
-      getPerfil: null,            //armazena o email, se existir no banco
+
       getPF: null,              //armazena o cpf, se existir no banco
       pf: {
         nome: '',
@@ -156,6 +226,7 @@ export default {
         email: '',
         senha: '',
         repetirSenha: '',
+        senhaAntiga: '',
       },
       cep: '', // API de CEP
       endereco: {
@@ -202,110 +273,201 @@ export default {
 
     this.atualizarClasse();
   },
-  computed(){
-    
-  },
   methods: {
-    async cadastrar() {
-      this.campoVazioAlerta = false;
-      this.senhaInvalida = false;
-      this.cpfExiste = false;
-      this.rgExiste = false;
-      this.emailExiste = false;
-      this.showModal = false;
 
-      if (this.campoVazio()) {
-        this.campoVazioAlerta = true;
+    excluirContaExibe() {
+      if (this.abaExcluirConta) {
+        this.abaExcluirConta = false;
+      } else {
+        this.abaExcluirConta = true;
+      }
+    },
+    async infoExibe() {
+
+      if (this.abaInfo) {
+        this.abaInfo = false;
+      } else {
+        this.getPF = await this.getPFById();
+        this.pf = {
+          nome: this.getPF.nome,
+          cpf: this.getPF.cpf,
+          rg: this.getPF.rg,
+        }
+        this.abaInfo = true;
+        this.abaEndereco = false;
+      }
+    },
+    async enderecoExibe() {
+      this.enderecoVazioAlerta = false;
+      if (this.abaEndereco) {
+        this.abaEndereco = false;
+      } else {
+        this.getPF = await this.getPFById();
+        this.abaEndereco = true;
+        this.endereco = {
+          cep: this.getPF.cep,
+          cidade: this.getPF.cidade,
+          rua: this.getPF.rua,
+          estado: this.getPF.estado,
+          bairro: this.getPF.bairro,
+          numero: this.getPF.numero,
+        }
+      }
+    },
+    async dadosContaExibe() {
+      this.emailExiste = false;
+      this.dadosVazioAlerta = false;
+      if (this.abaDadosConta) {
+        this.abaDadosConta = false;
+      } else {
+        const perfil = await this.getPerfilByID();
+        this.getPF = await this.getPFById();
+        this.login.email = perfil.email
+        this.pf.telefone = this.getPF.telefone
+        this.abaDadosConta = true;
+      }
+    },
+
+    segurancaExibe() {
+      this.senhaVazioAlerta = false;
+      this.senhaInvalida = false;
+      this.senhaAntigaIncorreta = false;
+      this.login.senhaAntiga = ''
+      this.login.senha = ''
+      this.login.repetirSenha = ''
+      if (this.abaSeguranca) {
+        this.abaSeguranca = false;
+      } else {
+        this.abaSeguranca = true;
+      }
+    },
+
+    async salvarEndereco() {
+      this.enderecoVazioAlerta = false;
+      if (this.enderecoVazio()) {
+        this.enderecoVazioAlerta = true;
+        return;
+      }
+
+      //try update endereco
+      const perfil = await this.getPerfilByID();
+      try {
+        const response = await axios.put(`http://127.0.0.1:5174/update-endereco-pf/${perfil.cod_perfil}`, {
+          cep: this.endereco.cep,
+          cidade: this.endereco.cidade,
+          rua: this.endereco.rua,
+          estado: this.endereco.estado,
+          bairro: this.endereco.bairro,
+          numero: this.endereco.numero,
+        })
+      } catch (err) {
+        console.log(err);
+      }
+
+    },
+
+    async salvarDadosConta() {
+      this.emailExiste = false;
+      this.dadosVazioAlerta = false;
+      if (this.dadosVazio()) {
+        this.dadosVazioAlerta = true;
+        return;
+      }
+
+      const getPerfil = await this.getPerfilByEmail()
+      if (getPerfil.email == this.login.email) {
+        this.emailExiste = true;
+        this.login.email = "";
+        return;
+      }
+
+      //update
+      let perfil = await this.getPerfilByID();
+      try {
+        const response = await axios.put(`http://127.0.0.1:5174/update-email-perfil/${perfil.cod_perfil}`, {
+          email: this.login.email,
+        })
+      } catch (err) {
+        console.log(err);
+      }
+      perfil = await this.getPerfilByID();
+
+      sessionStorage.clear();
+      const objecto = JSON.stringify(perfil)
+      sessionStorage.setItem('perfil', objecto)      
+      try {
+        const response = await axios.put(`http://127.0.0.1:5174/update-tel-pf/${perfil.cod_perfil}`, {
+          telefone: this.login.email,
+        })
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async salvarSenha() {
+      this.senhaVazioAlerta = false;
+      this.senhaInvalida = false;
+      this.senhaAntigaIncorreta = false
+
+      if (this.senhaVazio()) {
+        this.senhaVazioAlerta = true;
+        return;
+      }
+
+      const perfil = await this.getPerfilByID();
+      if (this.login.senhaAntiga != perfil.senha) {
+        this.senhaAntigaIncorreta = true;
         return;
       }
       if (this.confereSenha()) {
         this.senhaInvalida = true;
         return;
       }
-
-
-      this.getPF = await this.getPFByCPF()
-      if (this.getPF.cpf == this.pf.cpf) {
-        this.cpfExiste = true;
-        this.pf.cpf = "";
-        return;
-      }
-
-      this.getPF = await this.getPFByRG()
-      if (this.getPF.rg == this.pf.rg) {
-        this.rgExiste = true;
-        this.pf.rg = "";
-        return;
-      }
-
-
-
-      this.getPerfil = await this.getPerfilByEmail()
-      if (this.getPerfil.email == this.login.email) {
-        this.emailExiste = true;
-        this.login.email = "";
-        return;
-      }
-
-
+      //try update senha
       try {
-        const response = await axios.post('http://127.0.0.1:5174/createPerfil', {
-          email: this.login.email,
+        const response = await axios.put(`http://127.0.0.1:5174/update-senha-perfil/${perfil.cod_perfil}`, {
           senha: this.login.senha,
-          tipo_perfil: this.perfil,
-          tipo_persona: this.persona
-        });
-      } catch (err) {
-        console.log(err);
-      }
-
-      const partes = this.pf.nascimento.split('/');
-      const dataSQL = `${partes[2]}-${partes[1]}-${partes[0]}`     
-      this.getPerfil = await this.getPerfilByEmail()
-      try {
-        const response = await axios.post('http://127.0.0.1:5174/createPF', {
-          cod_perfil: this.getPerfil.cod_perfil,
-          cpf: this.pf.cpf,
-          rg: this.pf.rg,
-          nome: this.pf.nome,
-          data_nascimento: dataSQL,
-          telefone: this.pf.telefone,
-          cep: this.endereco.cep,
-          rua: this.endereco.rua,
-          numero: this.endereco.numero,
-          bairro: this.endereco.bairro,
-          cidade: this.endereco.cidade,
-          estado: this.endereco.estado
         })
       } catch (err) {
         console.log(err);
       }
+    },
 
-      this.showModal = true;
-      this.$router.push('/acesse')
+    async deletarConta() {      
+      try {
+        const response = await axios.delete(`http://127.0.0.1:5174/delete-perfil/${dados.cod_perfil}`)
+      } catch (err) {
+        console.log(err);
+      }
+      sessionStorage.clear()
+      this.$router.push('/')
+    },
+
+
+    async getPFById() {
+      const dados = JSON.parse(sessionStorage.getItem("perfil"))
+      try {
+        const response = await axios.get(`http://127.0.0.1:5174/pessoafisica/id/${dados.cod_perfil}`);
+        return response.data;
+      } catch (err) {
+        console.log(err);
+      }
     },
 
     async getPerfilByEmail() {
+      const perfil = await this.getPerfilByID();
       try {
-        const response = await axios.get(`http://127.0.0.1:5174/perfil/${this.login.email}`);
+        const response = await axios.get(`http://127.0.0.1:5174/perfil/${perfil.email}`);
         return response.data;
       } catch (err) {
         console.log(err);
       }
     },
 
-    async getPFByCPF() {
+    async getPerfilByID() {
+      const dados = JSON.parse(sessionStorage.getItem("perfil"))
       try {
-        const response = await axios.get(`http://127.0.0.1:5174/pessoafisicacpf/${this.pf.cpf}`);
-        return response.data;
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    async getPFByRG() {
-      try {
-        const response = await axios.get(`http://127.0.0.1:5174/pessoafisicarg/${this.pf.rg}`);
+        const response = await axios.get(`http://127.0.0.1:5174/perfil/id/${dados.cod_perfil}`);
         return response.data;
       } catch (err) {
         console.log(err);
@@ -319,26 +481,17 @@ export default {
       return false;
     },
 
-    campoVazio() {
-      for (const propriedade in this.pf) {
-        if (this.pf.hasOwnProperty(propriedade)) {
-          if (!this.pf[propriedade]) {
-            console.log(`${propriedade} está vazio`);
-            return true;
-          }
-        }
+    dadosVazio() {
+      if (this.login.email == "" || this.pf.telefone == "") {
+        return true
       }
-      for (const propriedade in this.login) {
-        if (this.login.hasOwnProperty(propriedade)) {
-          if (!this.login[propriedade]) {
-            console.log(`${propriedade} está vazio`);
-            return true;
-          }
-        }
-      }
+      return false
+    },
+
+    enderecoVazio() {
       for (const propriedade in this.endereco) {
         if (this.endereco.hasOwnProperty(propriedade)) {
-          if (!this.endereco[propriedade]) {
+          if (!this.endereco[propriedade] || this.endereco.cep == undefined) {
             console.log(`${propriedade} está vazio`);
             return true;
           }
@@ -346,7 +499,19 @@ export default {
       }
       return false;
     },
+
+    senhaVazio() {
+      if (this.login.senhaAntiga == "" ||
+        this.login.senha == "" || this.login.repetirSenha == "") {
+        return true
+      }
+      return false
+    },
+
     consultarCEP() {
+      if (this.endereco.cep == null) {
+        return
+      }
       const cep = this.removeMascaraCEP(this.endereco.cep);
       const url = `https://viacep.com.br/ws/${cep}/json/`;
 
@@ -379,10 +544,9 @@ export default {
       return cepa.replace(/\D/g, '')
     },
     atualizarClasse() {
-      // Obtenha a largura da tela
       const larguraDaTela = window.innerWidth;
-      // Determine a classe com base na largura da tela
-      this.classeNormal = larguraDaTela < 950 ? 'col col-12 pt-3' : 'col col-md-6 pt-3';
+      // this.classeNormal = larguraDaTela < 950 ? ' col-12 pt-3' : 'col col-md-6 pt-3';
+      this.classeNormal = larguraDaTela < 950 ? ' col-12 pt-3 justify-content-center align-items-center' : 'mx-auto col-md-10 pt-3 justify-content-center align-items-center';
     },
   },
 
@@ -397,5 +561,42 @@ export default {
 <style scoped>
 .bg-my {
   background-color: rgb(145, 145, 145);
+}
+
+.botao-colorido {
+  background-color: #88bee0;
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.botao-colorido:hover {
+  background-color: #268fd0;
+  color: white;
+  font-size: 21px;
+}
+
+.botao-colorido-endereco {
+  background-color: #fff;
+  color: #88bee0;
+  ;
+  padding: 10px 20px;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.botao-colorido-endereco:hover {
+  background-color: #96c1dc;
+  color: white;
+  font-size: 17px;
 }
 </style>
