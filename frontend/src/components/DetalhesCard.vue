@@ -1,5 +1,5 @@
 <template>
-    <div class="container-model-card" v-if="mostrarModal">
+    <div class="container-model-card" v-if="mostrarModal" :is="verificacao">
         <div class="card-datalhes">
             <span class="modal-fechar" @click="fecharModal">&times;</span>
             <div class="modal-corpo">
@@ -50,16 +50,19 @@
                         </template>
                     </ul>
                 </div>
-                <a class="btn btn-success m-3 confirmarAntecipacao" @click="confirmarAntecipacao">Confirmar</a>
+                <a class="btn btn-success m-3 confirmarAntecipacao" @click="confirmarAntecipacao" v-if="(dados.tipo_perfil == 'investidor' || dados.tipo_perfil == 'ambos') && tituloSelecionado.cod_perfil_credor != dados.cod_perfil">Antecipar</a>
+                <a class="btn btn-success m-3" @click="" v-if="(dados.tipo_perfil == 'credor' || dados.tipo_perfil == 'ambos') && tituloSelecionado.status_titulo == 'Ofertado' && tituloSelecionado.cod_perfil_credor == dados.cod_perfil">Editar</a>
+                <a class="btn btn-success m-3" @click="" v-if="(dados.tipo_perfil == 'credor' || dados.tipo_perfil == 'ambos') && tituloSelecionado.status_titulo == 'Ofertado' && tituloSelecionado.cod_perfil_credor == dados.cod_perfil">Excluir</a>
             </div>
         </div>
     </div>
+    <MsgSucesso :mostrarModal="mostrarModall" @fechar="fecharModal" :msgModal="msgModal" />
 </template>
   
 <script>
 import moment from 'moment';
 import axios from 'axios';
-
+import MsgSucesso from "./MsgSucesso.vue";
 
 export default {
     props: [
@@ -70,9 +73,33 @@ export default {
         'credor_pj',
     ],
     emits: ['fechar'],
+    components: {
+        MsgSucesso,
+    },
+    data() {
+        return {
+            mostrarModall: false,
+            msgModal: '',
+            dados: null,
+        }
+    },
+    computed: {
+        verificacao() {
+            const datas = JSON.parse(sessionStorage.getItem("perfil"));
+            if (datas == null) this.$router.push('/acesse');
+            this.dados = datas;
+            console.log(this.dados)
+        },
+    },
     methods: {
+        async abrirModal(msg) {
+            this.msgModal = msg
+            this.mostrarModall = true;
+            document.body.classList.add('modal-open');
+        },
         fecharModal() {
             this.$emit('fechar');
+            this.refreshPage();
             document.body.classList.remove('modal-open');
         },
         formatarDinheiro(valor) {
@@ -125,9 +152,8 @@ export default {
                     assinatura_investidor: assinatura,
                 });
                 await this.setStatusTitulo();
-                alert("Antecipação realizada com sucesso!")
-                this.fecharModal();
-                this.refreshPage();
+                await this.abrirModal('Antecipação realizada com sucesso!')
+                
 
             } catch (err) {
                 console.log(err);

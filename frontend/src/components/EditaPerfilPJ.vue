@@ -10,11 +10,8 @@
             <div class="card" style="border-radius: 1rem;">
               <div class="row  g-0">
                 <form class="ps-3 pe-2 pt-4 pb-5" action="">
-                  <div v-if="infoAlerta" class="alert alert-danger mt-3" role="alert">
+                  <div v-if="infoVazioAlerta" class="alert alert-danger mt-3" role="alert">
                     Preencha todos os campos!
-                  </div>
-                  <div v-if="emailExiste" class="alert alert-danger mt-3" role="alert">
-                    Esse e-mail já foi cadastrado!
                   </div>
                   <div v-if="docExiste" class="alert alert-danger mt-3" role="alert">
                     Esse CNPJ já foi cadastrado!
@@ -25,11 +22,11 @@
                     <div class="form-group col-md-4">
                       <label for=""><b>CNPJ</b></label>
                       <input type="text" class="form-control" id="cnpj" v-mask="'##.###.###/####-##'"
-                        @blur="consultarCNPJ" v-model="pj.cnpj" @focus="limpaCamposG">
+                        @blur="consultarCNPJ" v-model="pj.cnpj">
                     </div>
                     <div class="form-group col-md-4">
                       <label for=""><b>Fundação</b></label>
-                      <input type="text" class="form-control" id="fundacao" v-mask="'####/##/##'" v-model="pj.fundacao">
+                      <input type="text" class="form-control" id="fundacao" v-mask="'##/##/####'" v-model="pj.fundacao">
                     </div>
                     <div class="form-group col-md-4">
                       <label for=""><b>Tipo</b></label>
@@ -70,7 +67,7 @@
                   </div>
                   <div class="form-row row d-flex justify-content-center align-items-center">
                     <div class="form-group  col-md-1 mx-auto mt-4">
-                      <button class="btn btn-secondary" @click="salvarDadosConta" type="button">Salvar</button>
+                      <button class="btn btn-secondary" @click="salvarInfoConta" type="button">Salvar</button>
                     </div>
                   </div>
                 </form>
@@ -153,7 +150,7 @@
                     <div class="form-group col-md-4">
                       <label for=""><b>Telefone</b></label>
                       <input type="text" class="form-control" id="cpf" v-mask="['(##) ####-####', '(##) #####-####']"
-                        v-model="pf.telefone">
+                        v-model="pj.telefone">
                     </div>
                     <div class="form-row row d-flex justify-content-center align-items-center">
                       <div class="form-group  col-md-1 mx-auto mt-4">
@@ -238,15 +235,19 @@
       </div>
     </div>
   </section>
+  <MsgSucesso :mostrarModal="mostrarModal" @fechar="fecharModal" :msgModal="msgModal" />
 </template>
 
 <script>
 import axios from "axios";
 import { mask } from 'vue-the-mask'
+import MsgSucesso from "./MsgSucesso.vue";
 export default {
   directives: { mask },
   data() {
     return {
+      mostrarModal: false,
+      msgModal: '',
       abaInfo: false,
       abaDadosConta: false,
       abaSeguranca: false,
@@ -255,6 +256,8 @@ export default {
       step: null,
       classeNormal: '',        //Ajusta a classe dos elementos 
 
+      docExiste: false,
+      infoVazioAlerta: false,
       enderecoVazioAlerta: false, //Ativa uma div quando os campos estiverem vazios
       dadosVazioAlerta: false,
       senhaVazioAlerta: false,
@@ -326,7 +329,27 @@ export default {
 
     this.atualizarClasse();
   },
+  emits: ['fechar'],
+  components: {
+    MsgSucesso,
+  },
   methods: {
+    async abrirModal(msg) {
+      this.msgModal = msg
+      this.mostrarModal = true;
+      document.body.classList.add('modal-open');
+    },
+
+    fecharModal() {
+      this.mostrarModal = false;
+      this.abaInfo = false
+      this.abaDadosConta = false
+      this.abaSeguranca = false
+      this.abaEndereco = false
+      this.abaExcluirConta = false
+    },
+
+
 
     excluirContaExibe() {
       if (this.abaExcluirConta) {
@@ -336,10 +359,9 @@ export default {
       }
     },
     async infoExibe() {
-
+      this.infoVazioAlerta = false;
       if (this.abaInfo) {
         this.abaInfo = false;
-        console.log("teste")
       } else {
         this.getPJ = await this.getPJById();
         const dataFormatada = new Date(this.getPJ.data_fundacao).toLocaleDateString('pt-BR');
@@ -363,15 +385,15 @@ export default {
       if (this.abaEndereco) {
         this.abaEndereco = false;
       } else {
-        this.getPF = await this.getPFById();
+        this.getPJ = await this.getPJById();
         this.abaEndereco = true;
         this.endereco = {
-          cep: this.getPF.cep,
-          cidade: this.getPF.cidade,
-          rua: this.getPF.rua,
-          estado: this.getPF.estado,
-          bairro: this.getPF.bairro,
-          numero: this.getPF.numero,
+          cep: this.getPJ.cep,
+          cidade: this.getPJ.cidade,
+          rua: this.getPJ.rua,
+          estado: this.getPJ.estado,
+          bairro: this.getPJ.bairro,
+          numero: this.getPJ.numero,
         }
       }
     },
@@ -382,9 +404,9 @@ export default {
         this.abaDadosConta = false;
       } else {
         const perfil = await this.getPerfilByID();
-        this.getPF = await this.getPFById();
+        this.getPJ = await this.getPJById();
         this.login.email = perfil.email
-        this.pf.telefone = this.getPF.telefone
+        this.pj.telefone = this.getPJ.telefone
         this.abaDadosConta = true;
       }
     },
@@ -403,6 +425,35 @@ export default {
       }
     },
 
+    async salvarInfoConta() {
+      this.infoVazioAlerta = false;
+      if (this.infoVazio()) {
+        this.infoVazioAlerta = true;
+        return
+      }
+
+      const cnpjs = this.removerMascaraCNPJ(this.pj.cnpj)
+      const perfil = await this.getPerfilByID();
+      const partes = this.pj.fundacao.split('/');
+      const dataSQL = `${partes[2]}-${partes[1]}-${partes[0]}`
+      try {
+        const response = await axios.put(`http://127.0.0.1:5174/update-dados-pj/${perfil.cod_perfil}`, {
+          cnpj: cnpjs,
+          ramo_atividade: this.pj.atividade,
+          capital_social: this.pj.capital_social,
+          tipo_empresa: this.pj.tipo,
+          razao_social: this.pj.razao_social,
+          nome_fantasia: this.pj.nome_fantasia,
+          natureza_juridica: this.pj.natureza_juridica,
+          porte_empresa: this.pj.porte,
+          data_fundacao: dataSQL
+        })
+      } catch (err) {
+        console.log(err);
+      }
+      await this.abrirModal('Dados alterados com sucesso!')
+
+    },
     async salvarEndereco() {
       this.enderecoVazioAlerta = false;
       if (this.enderecoVazio()) {
@@ -413,7 +464,7 @@ export default {
       //try update endereco
       const perfil = await this.getPerfilByID();
       try {
-        const response = await axios.put(`http://127.0.0.1:5174/update-endereco-pf/${perfil.cod_perfil}`, {
+        const response = await axios.put(`http://127.0.0.1:5174/update-endereco-pj/${perfil.cod_perfil}`, {
           cep: this.endereco.cep,
           cidade: this.endereco.cidade,
           rua: this.endereco.rua,
@@ -424,7 +475,7 @@ export default {
       } catch (err) {
         console.log(err);
       }
-
+      await this.abrirModal('Endereço alterado com sucesso!')
     },
 
     async salvarDadosConta() {
@@ -436,7 +487,8 @@ export default {
       }
 
       const getPerfil = await this.getPerfilByEmail()
-      if (getPerfil.email == this.login.email) {
+      const pjt = await this.getPJById()
+      if (getPerfil.email == this.login.email && pjt.telefone == this.pj.telefone) {
         this.emailExiste = true;
         this.login.email = "";
         return;
@@ -446,23 +498,23 @@ export default {
       let perfil = await this.getPerfilByID();
       try {
         const response = await axios.put(`http://127.0.0.1:5174/update-email-perfil/${perfil.cod_perfil}`, {
-          email: this.login.email,
+          email: this.login.email
         })
       } catch (err) {
         console.log(err);
       }
       perfil = await this.getPerfilByID();
-
       sessionStorage.clear();
       const objecto = JSON.stringify(perfil)
       sessionStorage.setItem('perfil', objecto)
       try {
-        const response = await axios.put(`http://127.0.0.1:5174/update-tel-pf/${perfil.cod_perfil}`, {
-          telefone: this.login.email,
+        const response = await axios.put(`http://127.0.0.1:5174/update-tel-pj/${perfil.cod_perfil}`, {
+          telefone: this.pj.telefone
         })
       } catch (err) {
         console.log(err);
       }
+      await this.abrirModal('Dados alterados com sucesso!')
     },
 
     async salvarSenha() {
@@ -492,22 +544,17 @@ export default {
       } catch (err) {
         console.log(err);
       }
+      this.abrirModal('Senha alterada com sucesso!')
     },
 
     async deletarConta() {
-      const dados = JSON.parse(sessionStorage.getItem("perfil"))
-      try {
-        const response = await axios.delete(`http://127.0.0.1:5174/delete-pf/${dados.cod_perfil}`)
-      } catch (err) {
-        console.log(err);
-      }
-
       try {
         const response = await axios.delete(`http://127.0.0.1:5174/delete-perfil/${dados.cod_perfil}`)
       } catch (err) {
         console.log(err);
       }
       sessionStorage.clear()
+      await this.abrirModal('Conta excluida com sucesso!')
       this.$router.push('/')
     },
 
@@ -549,8 +596,19 @@ export default {
       return false;
     },
 
+    infoVazio() {
+      for (const propriedade in this.pj) {
+        if (this.pj.hasOwnProperty(propriedade)) {
+          if (!this.pj[propriedade]) {
+            console.log(`${propriedade} está vazio`);
+            return true;
+          }
+        }
+      }
+      return false;
+    },
     dadosVazio() {
-      if (this.login.email == "" || this.pf.telefone == "") {
+      if (this.login.email == "" || this.pj.telefone == "") {
         return true
       }
       return false
@@ -577,6 +635,10 @@ export default {
     },
 
     consultarCNPJ() {
+      const tam = String(this.pj.cnpj).length;
+      if (tam < 14) {
+        return
+      }
       const cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
       const url = `https://publica.cnpj.ws/cnpj/${cnpj}`;
 
@@ -589,6 +651,9 @@ export default {
         .catch(error => {
           console.log('Ocorreu um erro: ', error);
         });
+    },
+    removerMascaraCNPJ(cnpj) {
+      return cnpj.replace(/[^\d]/g, '');
     },
     consultarCEP() {
       if (this.endereco.cep == null) {
@@ -686,5 +751,9 @@ export default {
   background-color: #96c1dc;
   color: white;
   font-size: 17px;
+}
+
+.modal-open {
+  overflow: hidden;
 }
 </style>

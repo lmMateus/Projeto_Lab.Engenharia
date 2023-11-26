@@ -27,8 +27,10 @@
     </div>
   </nav>
   <main>
-    <component :is="componenteCard" />
-    <!-- <component :is="componenteAddTitulo" /> -->
+    <div v-if="teste">
+      <component :is="componenteCard" />
+      <!-- <component :is="componenteAddTitulo" /> -->
+    </div>
   </main>
 </template>
 <script>
@@ -38,28 +40,29 @@ import Card from "../components/Card.vue"
 export default {
   data() {
     return {
-      dados: null
+      dados: null,
+      teste:false,
     }
   },
   created() {
   },
 
   computed: {
-    verificacao(){
+    verificacao() {
       const datas = JSON.parse(sessionStorage.getItem("perfil"))
-      if(datas == null){
+      if (datas == null) {
         this.$router.push('/acesse')
+      } else {
+        this.componenteCard()
       }
     },
+  },
+  methods: {
     componenteCard() {
+      this.teste = true;
       return Card
     },
-    // componenteAddTitulo() {
-    //   return AddTitulo
-    // }
-  },
-  methods : {
-    encerrarConta(){
+    encerrarConta() {
       sessionStorage.clear()
       this.$router.push('/')
     }
@@ -68,10 +71,11 @@ export default {
 </script>
 
 <style scoped>
-.menu_icon{
+.menu_icon {
   background-color: white;
-  
+
 }
+
 .bg_color {
   background-color: #393E46;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -90,5 +94,4 @@ a {
   padding: 0;
   margin: 0;
 }
-
 </style>

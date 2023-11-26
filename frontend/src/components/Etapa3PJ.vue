@@ -53,7 +53,7 @@
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Fundação</b></label>
-                    <input type="text" class="form-control" id="fundacao" v-mask="'####/##/##'" v-model="pj.fundacao">
+                    <input type="text" class="form-control" id="fundacao" v-mask="'##/##/####'" v-model="pj.fundacao">
                   </div>
                   <div class="form-group col-md-4">
                     <label for=""><b>Tipo</b></label>
@@ -181,19 +181,21 @@
       </div>
     </div>
   </section>
+  <MsgSucesso :mostrarModal="mostrarModal" @fechar="fecharModal" :msgModal="msgModal" />
 </template>
 
 <script>
 //@ts-ignore
 import { mask } from 'vue-the-mask'
 import axios from 'axios';
+import MsgSucesso from "./MsgSucesso.vue";
 export default {
   directives: { mask },
   props: {
     perfil: String,
     persona: String,
   },
-  emits: ['escolhaPerfilPersona', 'setEtapa'],
+  emits: ['escolhaPerfilPersona', 'setEtapa', 'fechar'],
   data() {
     return {
       step: null,
@@ -270,7 +272,21 @@ export default {
 
     this.atualizarClasse();
   },
+  
+  components: {
+    MsgSucesso,
+  },
   methods: {
+    async abrirModal(msg) {
+      this.msgModal = msg
+      this.mostrarModal = true;
+      document.body.classList.add('modal-open');
+    },
+
+    fecharModal() {
+      this.mostrarModal = false;
+      this.$router.push('/acesse')
+    },
     atualizarClasse() {
       // Obtenha a largura da tela
       const larguraDaTela = window.innerWidth;
@@ -317,6 +333,8 @@ export default {
       }      
       this.getPerfil = await this.getPerfilByEmail()
       this.cnpj = this.removerMascaraCNPJ(this.pj.cnpj)
+      const partes = this.pj.fundacao.split('/');
+      const dataSQL = `${partes[2]}-${partes[1]}-${partes[0]}`
       try {
         const response = await axios.post('http://127.0.0.1:5174/createPJ', {
           cod_perfil: this.getPerfil.cod_perfil,
@@ -328,7 +346,7 @@ export default {
           nome_fantasia: this.pj.nome_fantasia,
           natureza_juridica: this.pj.natureza_juridica,
           porte_empresa: this.pj.porte,
-          data_fundacao: this.pj.fundacao,
+          data_fundacao: dataSQL,
           dados_desatualizados: this.checkbox,
           telefone: this.pj.telefone,
           cep: this.endereco.cep,
@@ -341,7 +359,7 @@ export default {
       } catch (err) {
         console.log(err);
       }
-      this.$router.push('/acesse')
+      await this.abrirModal('Você foi cadastrado com sucesso!')
     },
     async getPerfilByEmail() {
       try {

@@ -20,7 +20,7 @@ export const getTituloByID = (cod_titulo, result) => {
 export const getAllTitulo = (result) => {
   console.log(result)
   db.query(
-    "SELECT * FROM TITULO WHERE (STATUS_TITULO = 'OFERTADO')",
+    "SELECT * FROM TITULO",
     (err, results) => {
       if (err) {
         console.log(err);
@@ -41,7 +41,7 @@ export const insertTitulo = (data, result) => {
         console.log(err);
         result(err, null);
       } else {
-        result(null, results[0]);
+        result(null, results);
       }
     });
 };
@@ -93,6 +93,21 @@ export const setAntecipaTitulo = (data, result) => {
 export const setStatusTituloAntecipado = (data, result) => {
   db.query("UPDATE TITULO SET STATUS_TITULO = ? WHERE COD_TITULO = ?",
   [data.status_titulo, data.cod_titulo],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      } else {
+        result(null, results);
+      }
+    });
+};
+
+
+// Cheque
+export const setCheque = (data, result) => {
+  db.query("INSERT INTO CHEQUE SET ?",
+    data,
     (err, results) => {
       if (err) {
         console.log(err);

@@ -28,9 +28,15 @@ export default defineConfig({
       '/pessoajuridica/:cnpj': 'http://localhost:5174',
       '/pessoajuridica/id/:id': 'http://localhost:5174',
       '/createPJ': 'http://localhost:5174',
+      '/update-dados-pj/:id': 'http://localhost:5174',
+      '/update-endereco-pj/:id': 'http://localhost:5174',
+      '/update-tel-pj/:id': 'http://localhost:5174',
 
       //titulos
       '/titulos': 'http://localhost:5174',
+      '/titulos': 'http://localhost:5174',
+      '/gerencia-titulos/add': 'http://localhost:5174',
+      '/gerencia-titulos/add/cheque': 'http://localhost:5174',
     },
   },
 });

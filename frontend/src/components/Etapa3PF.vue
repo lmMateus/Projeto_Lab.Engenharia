@@ -37,6 +37,9 @@
                 <div v-if="campoVazioAlerta" class="alert alert-danger mt-3" role="alert">
                   Preencha todos os campos!
                 </div>
+                <div v-if="dataInvalidaAlerta" class="alert alert-danger mt-3" role="alert">
+                  Data inválida!
+                </div>
                 <div v-if="emailExiste" class="alert alert-danger mt-3" role="alert">
                   Esse e-mail já foi cadastrado!
                 </div>
@@ -153,22 +156,27 @@
       </div>
     </div>
   </section>
+  <MsgSucesso :mostrarModal="mostrarModal" @fechar="fecharModal" :msgModal="msgModal" />
 </template>
 
 <script>
 import axios from "axios";
 import { mask } from 'vue-the-mask'
+import MsgSucesso from "./MsgSucesso.vue";
 export default {
   directives: { mask },
   props: {
     perfil: String,
     persona: String,
   },
-  emits: ['escolhaPerfilPersona', 'setEtapa'],
+  emits: ['escolhaPerfilPersona', 'setEtapa','fechar'],
   data() {
     return {
+      mostrarModal: false,
+      msgModal: '',
       step: null,
       classeNormal: '',        //Ajusta a classe dos elementos 
+      dataInvalidaAlerta: false,
       campoVazioAlerta: false, //Ativa uma div quando os campos estiverem vazios
       senhaInvalida: false,    //ativa uma div quando as senha estiverem invalidas
       emailExiste: false,      //ativa uma div quando o email já existir no banco
@@ -234,8 +242,23 @@ export default {
 
     this.atualizarClasse();
   },
+  components: {
+    MsgSucesso,
+  },
   methods: {
+    async abrirModal(msg) {
+      this.msgModal = msg
+      this.mostrarModal = true;
+      document.body.classList.add('modal-open');
+    },
+
+    fecharModal() {
+      this.mostrarModal = false;
+      this.$router.push('/acesse')
+    },
+
     async cadastrar() {
+      this.dataInvalidaAlerta = false;
       this.campoVazioAlerta = false;
       this.senhaInvalida = false;
       this.cpfExiste = false;
@@ -276,7 +299,10 @@ export default {
         return;
       }
 
-
+      const partes = this.pf.nascimento.split('/');
+      const dataSQL = `${partes[2]}-${partes[1]}-${partes[0]}`      
+           
+      
       try {
         const response = await axios.post('http://127.0.0.1:5174/createPerfil', {
           email: this.login.email,
@@ -287,9 +313,7 @@ export default {
       } catch (err) {
         console.log(err);
       }
-
-      const partes = this.pf.nascimento.split('/');
-      const dataSQL = `${partes[2]}-${partes[1]}-${partes[0]}`     
+      
       this.getPerfil = await this.getPerfilByEmail()
       try {
         const response = await axios.post('http://127.0.0.1:5174/createPF', {
@@ -311,7 +335,8 @@ export default {
       }
 
       this.showModal = true;
-      this.$router.push('/acesse')
+      await this.abrirModal('Você foi cadastrado com sucesso!')
+      
     },
 
     async getPerfilByEmail() {

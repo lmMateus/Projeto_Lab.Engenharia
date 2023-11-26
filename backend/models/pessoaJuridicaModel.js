@@ -65,6 +65,55 @@ export const insertPJ = (data, result) => {
 //   });
 // };
 
+export const updateDadosPJByID = (data, id, result) => {
+  db.query(
+    "UPDATE PESSOA_JURIDICA SET cnpj = ?, ramo_atividade = ?, capital_social = ?, tipo_empresa = ?, razao_social = ?, nome_fantasia = ?, "+ 
+      "natureza_juridica = ?, porte_empresa = ?, data_fundacao = ? WHERE cod_perfil = ?",
+    [data.cnpj, data.ramo_atividade, data.capital_social, data.tipo_empresa, data.razao_social, data.nome_fantasia,
+      data.natureza_juridica, data.porte_empresa, data.data_fundacao, id],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      }else {
+        result(null, results);
+
+      }
+  });
+};
+
+export const updateEnderecoPJById = (data, id, result) => {
+  db.query(
+    "UPDATE PESSOA_JURIDICA SET cep = ?, rua = ?, numero = ?, bairro = ?, cidade = ?, "+
+      "estado = ? WHERE cod_perfil = ?",
+    [data.cep, data.rua, data.numero, data.bairro,
+       data.cidade, data.estado, id],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      }else {
+        result(null, results);
+
+      }
+  });
+};
+
+export const updateTelPJById = (data, id, result) => {
+  db.query(
+    "UPDATE PESSOA_JURIDICA SET telefone = ? WHERE cod_perfil = ?",
+    [data.telefone, id],
+    (err, results) => {
+      if (err) {
+        console.log(err);
+        result(err, null);
+      }else {
+        result(null, results);
+
+      }
+  });
+};
+
 // // Delete Product to Database
 // export const deletePJById = (id, result) => {
 //   db.query("DELETE FROM PESSOA_JURIDICA WHERE cnpj = ?", [id], (err, results) => {

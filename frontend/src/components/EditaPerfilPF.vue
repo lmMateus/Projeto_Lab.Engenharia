@@ -190,15 +190,19 @@
       </div>
     </div>
   </section>
+  <MsgSucesso :mostrarModal="mostrarModal" @fechar="fecharModal" :msgModal="msgModal" />
 </template>
 
 <script>
 import axios from "axios";
 import { mask } from 'vue-the-mask'
+import MsgSucesso from "./MsgSucesso.vue";
 export default {
   directives: { mask },
   data() {
     return {
+      mostrarModal: false,
+      msgModal: '',
       abaInfo: false,
       abaDadosConta: false,
       abaSeguranca: false,
@@ -273,7 +277,25 @@ export default {
 
     this.atualizarClasse();
   },
+  emits: ['fechar'],
+  components: {
+    MsgSucesso,
+  },
   methods: {
+    async abrirModal(msg) {
+      this.msgModal = msg
+      this.mostrarModal = true;
+      document.body.classList.add('modal-open');
+    },
+
+    fecharModal() {
+      this.mostrarModal = false;
+      this.abaInfo= false
+      this.abaDadosConta= false
+      this.abaSeguranca= false
+      this.abaEndereco= false
+      this.abaExcluirConta= false
+    },
 
     excluirContaExibe() {
       if (this.abaExcluirConta) {
@@ -363,7 +385,7 @@ export default {
       } catch (err) {
         console.log(err);
       }
-
+      await this.abrirModal('Endereço alterado com sucesso!')
     },
 
     async salvarDadosConta() {
@@ -394,14 +416,16 @@ export default {
 
       sessionStorage.clear();
       const objecto = JSON.stringify(perfil)
-      sessionStorage.setItem('perfil', objecto)      
+      sessionStorage.setItem('perfil', objecto)    
+        
       try {
         const response = await axios.put(`http://127.0.0.1:5174/update-tel-pf/${perfil.cod_perfil}`, {
-          telefone: this.login.email,
+          telefone: this.pf.telefone,
         })
       } catch (err) {
         console.log(err);
       }
+      await this.abrirModal('Dados da conta alterados com sucesso!')
     },
 
     async salvarSenha() {
@@ -431,6 +455,7 @@ export default {
       } catch (err) {
         console.log(err);
       }
+      await this.abrirModal('Senha alterada com sucesso!')
     },
 
     async deletarConta() {      
@@ -440,6 +465,7 @@ export default {
         console.log(err);
       }
       sessionStorage.clear()
+      await this.abrirModal('Conta excluida com sucesso!')
       this.$router.push('/')
     },
 

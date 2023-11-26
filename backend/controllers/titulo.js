@@ -2,6 +2,8 @@ import {
   getAllTitulo,
   setAntecipaTitulo,
   setStatusTituloAntecipado,
+  insertTitulo,
+  setCheque,
 } from "../models/tituloModel.js"; 
 
 export const AllTitulo = (req, res) => {
@@ -47,35 +49,23 @@ export const showPJById = (req, res) => {
   });
 };
 
-export const createPF = (req, res) => {
+export const setTitulos = (req, res) => {
   const data = req.body;
-  insertPF(data,(err,results)=>{
+  insertTitulo(data,(err,results)=>{
     if(err){
       res.send(err);
     }else{
       res.json(results);
     }
   });
-}
-
-export const updatePF = (req, res) => {
-  const data = req.body;
-  const cod_titulo = req.params.cod_titulo;
-  updatePFById(data, cod_titulo, (err, results) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.json(results);
-    }
-  });
 };
 
-
-export const deletePF = (req, res) => {
-  deletePFById(req.params.cod_titulo, (err, results) => {
-    if (err) {
+export const setChequeTitulo = (req, res) => {
+  const data = req.body;
+  setCheque(data,(err,results)=>{
+    if(err){
       res.send(err);
-    } else {
+    }else{
       res.json(results);
     }
   });

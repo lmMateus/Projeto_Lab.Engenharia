@@ -1,9 +1,29 @@
 <template>
-    <div class="container mt-5">
-        <div>
-        </div>
-        <div class="row">
+    <div class="container mt-5" :is="verificacao">
+        <div class="row"  v-if="dados.tipo_perfil == 'investidor'">
             <div v-for="titulo in titulos" :key="titulo.codigo_titulo" class="col-md-4 mb-4">
+                <div class="card" v-if="titulo.status_titulo == 'Ofertado'">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ titulo.tipo_titulo }}</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Status:</strong>
+                                <span :class="formataStatus(titulo.status_titulo)">{{ titulo.status_titulo }}</span>
+                            </li>
+                            <li class="list-group-item"><strong>Valor Nominal:</strong> {{
+                                formatarDinheiro(titulo.valor_nominal) }}</li>
+                            <li class="list-group-item"><strong>Valor Oferta:</strong> {{
+                                formatarDinheiro(titulo.valor_oferta) }}</li>
+                            <li class="list-group-item"><strong>Data de Vencimento:</strong> {{
+                                formatarData(titulo.data_vencimento) }}</li>
+                        </ul>
+                        <a class="btn btn-primary m-3" @click="abrirModal(titulo)">Detalhes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row"  v-if="dados.tipo_perfil == 'credor'">
+            <div v-for="titulo in titulos" :key="titulo.codigo_titulo" class="col-md-4 mb-4" v-if="titulo.cod_perfil_credor == dados.cod_perfil">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">{{ titulo.tipo_titulo }}</h5>
@@ -19,8 +39,29 @@
                             <li class="list-group-item"><strong>Data de Vencimento:</strong> {{
                                 formatarData(titulo.data_vencimento) }}</li>
                         </ul>
-                        <a class="btn btn-primary m-3" @click="abrirModal(titulo)">Antecipar</a>
-
+                        <a class="btn btn-primary m-3" @click="abrirModal(titulo)">Detalhes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row"  v-if="dados.tipo_perfil == 'ambos'">
+            <div v-for="titulo in titulos" :key="titulo.codigo_titulo" class="col-md-4 mb-4">
+                <div class="card" v-if="(titulo.status_titulo == 'Antecipado' && titulo.cod_perfil_credor == dados.cod_perfil) || titulo.status_titulo == 'Ofertado' ">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ titulo.tipo_titulo }}</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Status:</strong>
+                                <span :class="formataStatus(titulo.status_titulo)">{{ titulo.status_titulo }}</span>
+                            </li>
+                            <li class="list-group-item"><strong>Valor Nominal:</strong> {{
+                                formatarDinheiro(titulo.valor_nominal) }}</li>
+                            <li class="list-group-item"><strong>Valor Oferta:</strong> {{
+                                formatarDinheiro(titulo.valor_oferta) }}</li>
+                            <li class="list-group-item"><strong>Data de Vencimento:</strong> {{
+                                formatarData(titulo.data_vencimento) }}</li>
+                        </ul>
+                        <a class="btn btn-primary m-3" @click="abrirModal(titulo)">Detalhes</a>
                     </div>
                 </div>
             </div>
@@ -44,6 +85,7 @@ export default {
     data() {
         return {
             titulos: [],
+            dados: null,
             mostrarModal: false,
             tituloSelecionado: null,
             credor: {
@@ -75,6 +117,15 @@ export default {
     },
     created() {
         this.getTitulos();
+    },
+    computed: {
+        verificacao() {
+            const datas = JSON.parse(sessionStorage.getItem("perfil"));
+            if (datas == null) this.$router.push('/acesse');
+            this.dados = datas;
+            console.log("teste")
+            console.log(this.dados)
+        },
     },
     methods: {
         async getTitulos() {
